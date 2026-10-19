@@ -9,12 +9,15 @@
 Put any character into any clip. The camera, the moves and the timing stay; the person changes.
 Everything up to the render runs on your Mac, for free.
 
+[![Download for macOS](https://img.shields.io/badge/Download-macOS%20%C2%B7%20Apple%20Silicon-8b5cf6?style=for-the-badge&logo=apple&logoColor=white)](https://github.com/jutsuhq/swapjutsu-seedance-character-swap/releases/latest)
+
 [Examples](#examples) · [Install](#install) · [Quick start](#quick-start) · [How it works](#how-it-works) ·
 [Rendering](#rendering) · [Agents](#agents) · [Docs](#documentation)
 
+[![Latest release](https://img.shields.io/github/v/release/jutsuhq/swapjutsu-seedance-character-swap?label=release&color=8b5cf6)](https://github.com/jutsuhq/swapjutsu-seedance-character-swap/releases/latest)
 [![License: MIT](https://img.shields.io/badge/License-MIT-8b5cf6.svg)](LICENSE)
 [![Platform](https://img.shields.io/badge/platform-macOS%2015%2B-000000?logo=apple&logoColor=white)](#requirements)
-[![Swift 6.2](https://img.shields.io/badge/Swift-6.2-F05138?logo=swift&logoColor=white)](https://swift.org)
+[![Swift 6.4](https://img.shields.io/badge/Swift-6.4-F05138?logo=swift&logoColor=white)](https://swift.org)
 [![On-device](https://img.shields.io/badge/prep-Vision%20%2B%20Core%20ML-34c759)](#how-it-works)
 [![Unofficial](https://img.shields.io/badge/unofficial-not%20affiliated%20with%20Higgsfield%20or%20ByteDance-e879f9)](#disclaimer)
 
@@ -44,8 +47,7 @@ Unedited Seedance 2.5 drafts at 480p, the cheapest render.
 
 ## Install
 
-Download `Swapjutsu-<version>.dmg` from
-[Releases](https://github.com/jutsuhq/swapjutsu-seedance-character-swap/releases) and drag the app to Applications.
+Download `Swapjutsu-<version>.dmg` from the [latest release](https://github.com/jutsuhq/swapjutsu-seedance-character-swap/releases/latest) and drag the app to Applications.
 It is signed and notarized, for Apple Silicon on macOS 15 or later. To check the download:
 
 ```bash

@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Render and finish</title>
+<link rel="stylesheet" href="diagram.css">
+<style>
+  .pair { display: flex; gap: 10px; align-items: center; }
+  .pair .media { width: 168px; height: 300px; }
+  .mid { flex: 1; display: flex; flex-direction: column; gap: 12px; }
+  .steps { display: flex; gap: 10px; }
+  .steps .card { flex: 1; padding: 14px 16px; }
+  .steps b { display: block; font-size: 15px; margin-bottom: 4px; }
+  .steps span { font-size: 12.5px; color: var(--muted); }
+  table { width: 100%; border-collapse: collapse; font-size: 15px; }
+  th { text-align: left; font: 700 11.5px/1 -apple-system, sans-serif; letter-spacing: 0.1em; text-transform: uppercase;
+       color: var(--faint); padding: 0 0 10px; }
+  td { padding: 9px 0; border-top: 1px solid var(--stroke); }
+  td.new { font: 800 26px/1 "Barlow Condensed", sans-serif; color: var(--accent); }
+  .fine { font-size: 12px; color: var(--faint); margin-top: 8px; }
+</style>
+</head>
+<body>
+<div class="slide">
+  <div class="kicker"><span class="step">Step 7</span> Render and finish</div>
+  <h1>Draft cheap, <em>finish sharp</em></h1>
+  <p class="lede">Only this step costs money, and you see the price before every paid click. Your own Comfy key, no subscription, no account with us.</p>
+  <div class="body">
+    <div class="pair">
+      <div class="media"><img src="img/cats-source.jpg"><span class="tag">Clip</span></div>
+      <div class="arrow">→</div>
+      <div class="media"><img src="img/cats-result.jpg"><span class="tag">480p draft</span></div>
+    </div>
+    <div class="mid">
+      <div class="steps">
+        <div class="card"><b>1 · Draft 480p</b><span>Iterate on the prompt until you like it</span></div>
+        <div class="card"><b>2 · Final 1080p</b><span>From the same Seedance task, same motion, within 7 days</span></div>
+        <div class="card"><b>3 · Finish</b><span>Seedance's audio out, your original soundtrack back</span></div>
+      </div>
+      <div class="card">
+        <table>
+          <tr><th>10 s swap</th><th>Seedance 2.5 via Comfy</th></tr>
+          <tr><td>480p draft</td><td class="new">$1.71</td></tr>
+          <tr><td>720p final</td><td class="new">$3.96</td></tr>
+          <tr><td>1080p final</td><td class="new">~$9.75</td></tr>
+        </table>
+        <p class="fine">Seedance 2.5 via Comfy's partner nodes: drafts from a real bill (180 credits per 5 s), finals from the node's price badge.</p>
+      </div>
+      <div class="card steps" style="padding: 12px 16px; display: block"><b>Or render free with Wan 2.2 Animate</b><span>Point the app at your own ComfyUI: open weights, your GPU, the same prep and prompt.</span></div>
+    </div>
+  </div>
+  <div class="footer" style="margin-top: 22px">
+    <span class="chip paid">Seedance 2.5 · Comfy</span><span class="chip">Wan 2.2 Animate · your ComfyUI</span><span class="chip">AVAssetWriter</span>
+    <span class="brand"><img src="../assets/icon.png">Swapjutsu</span>
+  </div>
+</div>
+</body>
+</html>

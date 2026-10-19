@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>How Swapjutsu works</title>
+<link rel="stylesheet" href="diagram.css">
+<style>
+  .inputs { width: 210px; display: flex; flex-direction: column; gap: 10px; }
+  .inputs .clip { height: 300px; }
+  .inputs .row { display: flex; gap: 10px; height: 118px; }
+  .inputs .row .media { flex: 1; }
+  .mac { flex: 1; display: flex; flex-direction: column; gap: 12px; border-color: rgba(242, 255, 89, 0.35); }
+  .mac header { display: flex; align-items: center; justify-content: space-between; }
+  .mac h2 { font: 800 26px/1 "Barlow Condensed", sans-serif; text-transform: uppercase; }
+  .steps { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; flex: 1; }
+  .s { background: rgba(255, 255, 255, 0.04); border-radius: 12px; padding: 11px 12px; display: flex; gap: 10px; }
+  .s .n { flex: none; width: 24px; height: 24px; border-radius: 7px; background: var(--accent); color: var(--ink);
+          font: 800 16px/24px "Barlow Condensed", sans-serif; text-align: center; }
+  .s b { display: block; font-size: 14.5px; }
+  .s span { display: block; font-size: 12.5px; color: var(--muted); margin-top: 2px; }
+  .s i { display: block; font-style: normal; font-size: 11.5px; color: var(--faint); margin-top: 4px; }
+  .render { width: 250px; display: flex; flex-direction: column; gap: 10px; }
+  .render .result { flex: 1; }
+  .route { padding: 10px 12px; border-radius: 12px; font-size: 12.5px; color: var(--muted); }
+  .route b { color: var(--text); font-size: 14px; display: block; }
+</style>
+</head>
+<body>
+<div class="slide">
+  <div class="kicker"><span class="step">How it works</span> Swapjutsu · native macOS · open source</div>
+  <h1>Your clip in, <em>a new person</em> out</h1>
+  <p class="lede">Everything up to the render runs on your Mac, for free. The cloud only draws the final pixels.</p>
+  <div class="body">
+    <div class="inputs">
+      <div class="media clip"><img src="img/cloister-source.jpg"><span class="tag">Your clip</span></div>
+      <div class="row">
+        <div class="media"><img src="img/cloister-character.jpg" style="object-position: 50% 10%"><span class="tag">Character</span></div>
+        <div class="media"><img src="img/cloister-place.jpg"><span class="tag">Place</span></div>
+      </div>
+    </div>
+    <div class="arrow">→</div>
+    <div class="card mac">
+      <header><h2>On your Mac</h2><span class="chip free">Free · offline</span></header>
+      <div class="steps">
+        <div class="s"><div class="n">1</div><div><b>Find everyone</b><span>Shot cuts, a mask per person, the same person across cuts</span><i>Vision · GPU</i></div></div>
+        <div class="s"><div class="n">2</div><div><b>Track</b><span>EdgeTAM follows the person frame by frame</span><i>Core ML · Neural Engine</i></div></div>
+        <div class="s"><div class="n">3</div><div><b>Read the motion</b><span>Timed turns, steps and arm moves, put into words</span><i>Vision body pose · MLX</i></div></div>
+        <div class="s"><div class="n">4</div><div><b>Read the character</b><span>Face, outfit, what swings; a face close-up</span><i>Local vision model · MLX</i></div></div>
+        <div class="s"><div class="n">5</div><div><b>Write the prompt</b><span>Who, what they wear, beat by beat, editable</span><i>On device</i></div></div>
+        <div class="s"><div class="n">6</div><div><b>Build the control video</b><span>Depth-painted person, vocals only</span><i>Depth Anything · Core Image</i></div></div>
+      </div>
+    </div>
+    <div class="arrow">→</div>
+    <div class="render">
+      <div class="media result"><img src="img/cloister-result.jpg"><span class="tag">Result</span></div>
+      <div class="route card"><b>Seedance 2.5 via Comfy</b>480p draft first, 1080p when you like it</div>
+      <div class="route card"><b>or Wan 2.2 Animate</b>on your own ComfyUI, open weights</div>
+    </div>
+  </div>
+  <div class="footer" style="margin-top: 22px">
+    <span class="chip">No Python</span><span class="chip">No cloud GPU</span><span class="chip">Apple Silicon</span>
+    <span class="brand"><img src="../assets/icon.png">Swapjutsu</span>
+  </div>
+</div>
+</body>
+</html>

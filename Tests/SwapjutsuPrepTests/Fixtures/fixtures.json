@@ -1,0 +1,46 @@
+{
+  "about": "Clips the prep pipeline is checked against (FixtureTests.swift). The video files are not committed: put them in this folder under these names (symlinks are fine) and run SWAPJUTSU_FIXTURES=1 swift test. Labels were checked by eye on review.mp4. cuts: frame where each new shot starts, ±1 frame. shots: the people (letters) on screen for at least half of each shot; null = not checked. main: the label that must be identity 1.",
+  "fixtures": [
+    {
+      "file": "duo-cuts.mov",
+      "describes": "Two performers, 9.6 s screen recording of a music video: wide shot, close-ups, two cuts between near-identical framings on the same orange backdrop.",
+      "cuts": [8, 114, 141, 163, 194],
+      "shots": [["A", "B"], ["A", "B"], ["B"], ["A"], ["B"], ["A"]],
+      "main": "A"
+    },
+    {
+      "file": "walk-back.mp4",
+      "describes": "One person walking away from the camera, coat flapping, no face. Stock clip, 1080×1920 at 25 fps.",
+      "maxSeconds": 12,
+      "cuts": [],
+      "shots": [["A"]],
+      "main": "A"
+    },
+    {
+      "file": "pilot-cockpit.mp4",
+      "describes": "A pilot in profile with sunglasses drinking from a cup; seat headrest and a second seat next to him. 854×480 generated clip.",
+      "cuts": [],
+      "shots": [["A"]],
+      "main": "A"
+    },
+    {
+      "file": "driver-car.mp4",
+      "describes": "A driver in an open car, hands moving past the steering wheel, sky and trees behind. 480×854 generated clip.",
+      "cuts": [],
+      "shots": [["A"]],
+      "main": "A"
+    },
+    {
+      "file": "pilot-story.mp4",
+      "describes": "A 10 s generated story with 8 shots (the two-frame one cut at 137 joins a neighbour): plane wing, pilot drinking, coffee close-up, flying car, pilot close-ups, two pilots. The same pilot returns after five cuts.",
+      "cuts": null,
+      "shots": [[], ["A"], [], null, null, null, ["A"], null],
+      "main": "A"
+    },
+    {
+      "file": "no-person.mp4",
+      "describes": "A car with no people. Must fail with noPerson rather than replace an object.",
+      "error": "noPerson"
+    }
+  ]
+}

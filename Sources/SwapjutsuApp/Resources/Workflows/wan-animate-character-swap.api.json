@@ -1,0 +1,379 @@
+{
+  "1": {
+    "class_type": "UNETLoader",
+    "_meta": { "title": "Wan 2.2 Animate 14B" },
+    "inputs": {
+      "unet_name": "Wan2_2-Animate-14B_fp8_e4m3fn_scaled_KJ.safetensors",
+      "weight_dtype": "default"
+    }
+  },
+  "2": {
+    "class_type": "LoraLoaderModelOnly",
+    "_meta": { "title": "LightX2V 4-step LoRA" },
+    "inputs": {
+      "model": ["1", 0],
+      "lora_name": "lightx2v_I2V_14B_480p_cfg_step_distill_rank64_bf16.safetensors",
+      "strength_model": 1
+    }
+  },
+  "3": {
+    "class_type": "ModelSamplingSD3",
+    "_meta": { "title": "ModelSamplingSD3" },
+    "inputs": {
+      "model": ["2", 0],
+      "shift": 8
+    }
+  },
+  "4": {
+    "class_type": "CLIPLoader",
+    "_meta": { "title": "UMT5 XXL" },
+    "inputs": {
+      "clip_name": "umt5_xxl_fp8_e4m3fn_scaled.safetensors",
+      "type": "wan",
+      "device": "default"
+    }
+  },
+  "5": {
+    "class_type": "CLIPTextEncode",
+    "_meta": { "title": "Positive prompt" },
+    "inputs": {
+      "clip": ["4", 0],
+      "text": "The character moves naturally in the scene."
+    }
+  },
+  "6": {
+    "class_type": "CLIPTextEncode",
+    "_meta": { "title": "Negative prompt" },
+    "inputs": {
+      "clip": ["4", 0],
+      "text": "色调艳丽，过曝，静态，细节模糊不清，字幕，风格，作品，画作，画面，静止，整体发灰，最差质量，低质量，JPEG压缩残留，丑陋的，残缺的，多余的手指，画得不好的手部，画得不好的脸部，畸形的，毁容的，形态畸形的肢体，手指融合，静止不动的画面，杂乱的背景，三条腿，背景人很多，倒着走"
+    }
+  },
+  "7": {
+    "class_type": "VAELoader",
+    "_meta": { "title": "Wan 2.1 VAE" },
+    "inputs": {
+      "vae_name": "wan_2.1_vae.safetensors"
+    }
+  },
+  "8": {
+    "class_type": "CLIPVisionLoader",
+    "_meta": { "title": "CLIP Vision H" },
+    "inputs": {
+      "clip_name": "clip_vision_h.safetensors"
+    }
+  },
+  "9": {
+    "class_type": "LoadImage",
+    "_meta": { "title": "Character" },
+    "inputs": {
+      "image": "character.png"
+    }
+  },
+  "10": {
+    "class_type": "CLIPVisionEncode",
+    "_meta": { "title": "CLIP Vision Encode" },
+    "inputs": {
+      "clip_vision": ["8", 0],
+      "image": ["9", 0],
+      "crop": "none"
+    }
+  },
+  "11": {
+    "class_type": "LoadVideo",
+    "_meta": { "title": "Source (prepared.mp4 at 16 fps)" },
+    "inputs": {
+      "file": "source.mp4"
+    }
+  },
+  "12": {
+    "class_type": "GetVideoComponents",
+    "_meta": { "title": "Source frames" },
+    "inputs": {
+      "video": ["11", 0]
+    }
+  },
+  "13": {
+    "class_type": "ImageScale",
+    "_meta": { "title": "Source at the render size" },
+    "inputs": {
+      "image": ["12", 0],
+      "upscale_method": "lanczos",
+      "width": 832,
+      "height": 480,
+      "crop": "center"
+    }
+  },
+  "14": {
+    "class_type": "DWPreprocessor",
+    "_meta": { "title": "DWPose face" },
+    "inputs": {
+      "image": ["13", 0],
+      "detect_hand": "disable",
+      "detect_body": "disable",
+      "detect_face": "enable",
+      "resolution": 480,
+      "bbox_detector": "yolox_l.onnx",
+      "pose_estimator": "dw-ll_ucoco_384_bs5.torchscript.pt",
+      "scale_stick_for_xinsr_cn": "disable"
+    }
+  },
+  "15": {
+    "class_type": "DWPreprocessor",
+    "_meta": { "title": "DWPose body and hands" },
+    "inputs": {
+      "image": ["13", 0],
+      "detect_hand": "enable",
+      "detect_body": "enable",
+      "detect_face": "disable",
+      "resolution": 480,
+      "bbox_detector": "yolox_l.onnx",
+      "pose_estimator": "dw-ll_ucoco_384_bs5.torchscript.pt",
+      "scale_stick_for_xinsr_cn": "disable"
+    }
+  },
+  "16": {
+    "class_type": "LoadVideo",
+    "_meta": { "title": "Character mask (mask.mp4 at 16 fps)" },
+    "inputs": {
+      "file": "mask.mp4"
+    }
+  },
+  "17": {
+    "class_type": "GetVideoComponents",
+    "_meta": { "title": "Mask frames" },
+    "inputs": {
+      "video": ["16", 0]
+    }
+  },
+  "18": {
+    "class_type": "ImageScale",
+    "_meta": { "title": "Mask at the render size" },
+    "inputs": {
+      "image": ["17", 0],
+      "upscale_method": "bilinear",
+      "width": 832,
+      "height": 480,
+      "crop": "center"
+    }
+  },
+  "19": {
+    "class_type": "ImageScaleBy",
+    "_meta": { "title": "Blockify: one pixel per 32 px block" },
+    "inputs": {
+      "image": ["18", 0],
+      "upscale_method": "area",
+      "scale_by": 0.03125
+    }
+  },
+  "20": {
+    "class_type": "ImageScale",
+    "_meta": { "title": "Blockify: blocks back at the render size" },
+    "inputs": {
+      "image": ["19", 0],
+      "upscale_method": "nearest-exact",
+      "width": 832,
+      "height": 480,
+      "crop": "disabled"
+    }
+  },
+  "21": {
+    "class_type": "ImageToMask",
+    "_meta": { "title": "Mask" },
+    "inputs": {
+      "image": ["20", 0],
+      "channel": "red"
+    }
+  },
+  "22": {
+    "class_type": "ThresholdMask",
+    "_meta": { "title": "Blockify: a block the person touches" },
+    "inputs": {
+      "mask": ["21", 0],
+      "value": 0.05
+    }
+  },
+  "23": {
+    "class_type": "EmptyImage",
+    "_meta": { "title": "Black" },
+    "inputs": {
+      "width": 832,
+      "height": 480,
+      "batch_size": 1,
+      "color": 0
+    }
+  },
+  "24": {
+    "class_type": "ImageCompositeMasked",
+    "_meta": { "title": "Background: source with the person blacked out" },
+    "inputs": {
+      "destination": ["13", 0],
+      "source": ["23", 0],
+      "x": 0,
+      "y": 0,
+      "resize_source": false,
+      "mask": ["22", 0]
+    }
+  },
+  "101": {
+    "class_type": "WanAnimateToVideo",
+    "_meta": { "title": "WanAnimateToVideo" },
+    "inputs": {
+      "positive": ["5", 0],
+      "negative": ["6", 0],
+      "vae": ["7", 0],
+      "width": 832,
+      "height": 480,
+      "length": 77,
+      "batch_size": 1,
+      "clip_vision_output": ["10", 0],
+      "reference_image": ["9", 0],
+      "face_video": ["14", 0],
+      "pose_video": ["15", 0],
+      "continue_motion_max_frames": 5,
+      "background_video": ["24", 0],
+      "character_mask": ["22", 0],
+      "video_frame_offset": 0
+    }
+  },
+  "102": {
+    "class_type": "KSampler",
+    "_meta": { "title": "KSampler" },
+    "inputs": {
+      "model": ["3", 0],
+      "positive": ["101", 0],
+      "negative": ["101", 1],
+      "latent_image": ["101", 2],
+      "seed": 0,
+      "steps": 6,
+      "cfg": 1,
+      "sampler_name": "euler",
+      "scheduler": "simple",
+      "denoise": 1
+    }
+  },
+  "103": {
+    "class_type": "TrimVideoLatent",
+    "_meta": { "title": "Trim Video Latent" },
+    "inputs": {
+      "samples": ["102", 0],
+      "trim_amount": ["101", 3]
+    }
+  },
+  "104": {
+    "class_type": "VAEDecode",
+    "_meta": { "title": "VAE Decode" },
+    "inputs": {
+      "samples": ["103", 0],
+      "vae": ["7", 0]
+    }
+  },
+  "105": {
+    "class_type": "ImageFromBatch",
+    "_meta": { "title": "Drop the continued frames" },
+    "inputs": {
+      "image": ["104", 0],
+      "batch_index": ["101", 4],
+      "length": 4096
+    }
+  },
+  "201": {
+    "class_type": "WanAnimateToVideo",
+    "_meta": { "title": "WanAnimateToVideo (extend)" },
+    "inputs": {
+      "positive": ["5", 0],
+      "negative": ["6", 0],
+      "vae": ["7", 0],
+      "width": 832,
+      "height": 480,
+      "length": 77,
+      "batch_size": 1,
+      "clip_vision_output": ["10", 0],
+      "reference_image": ["9", 0],
+      "face_video": ["14", 0],
+      "pose_video": ["15", 0],
+      "continue_motion_max_frames": 5,
+      "background_video": ["24", 0],
+      "character_mask": ["22", 0],
+      "video_frame_offset": ["101", 5],
+      "continue_motion": ["105", 0]
+    }
+  },
+  "202": {
+    "class_type": "KSampler",
+    "_meta": { "title": "KSampler" },
+    "inputs": {
+      "model": ["3", 0],
+      "positive": ["201", 0],
+      "negative": ["201", 1],
+      "latent_image": ["201", 2],
+      "seed": 0,
+      "steps": 6,
+      "cfg": 1,
+      "sampler_name": "euler",
+      "scheduler": "simple",
+      "denoise": 1
+    }
+  },
+  "203": {
+    "class_type": "TrimVideoLatent",
+    "_meta": { "title": "Trim Video Latent" },
+    "inputs": {
+      "samples": ["202", 0],
+      "trim_amount": ["201", 3]
+    }
+  },
+  "204": {
+    "class_type": "VAEDecode",
+    "_meta": { "title": "VAE Decode" },
+    "inputs": {
+      "samples": ["203", 0],
+      "vae": ["7", 0]
+    }
+  },
+  "205": {
+    "class_type": "ImageFromBatch",
+    "_meta": { "title": "Drop the continued frames" },
+    "inputs": {
+      "image": ["204", 0],
+      "batch_index": ["201", 4],
+      "length": 4096
+    }
+  },
+  "206": {
+    "class_type": "ImageBatch",
+    "_meta": { "title": "Append to the frames so far" },
+    "inputs": {
+      "image1": ["105", 0],
+      "image2": ["205", 0]
+    }
+  },
+  "899": {
+    "class_type": "ImageFromBatch",
+    "_meta": { "title": "Cut to the source's length" },
+    "inputs": {
+      "image": ["206", 0],
+      "batch_index": 0,
+      "length": 4096
+    }
+  },
+  "900": {
+    "class_type": "CreateVideo",
+    "_meta": { "title": "Create Video" },
+    "inputs": {
+      "images": ["899", 0],
+      "fps": 16
+    }
+  },
+  "901": {
+    "class_type": "SaveVideo",
+    "_meta": { "title": "Save Video" },
+    "inputs": {
+      "video": ["900", 0],
+      "filename_prefix": "swapjutsu/wan",
+      "format": "mp4",
+      "format.codec": "auto",
+      "codec": "auto"
+    }
+  }
+}

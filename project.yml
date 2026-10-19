@@ -1,0 +1,148 @@
+# XcodeGen spec for Swapjutsu.app. Generate the project with `xcodegen generate` (or build with
+# scripts/build-app.sh); Swapjutsu.xcodeproj is not committed. The app code is the local package's SwapjutsuApp
+# library; this target only adds the bundle: Info.plist, icon, signing.
+name: Swapjutsu
+options:
+  # Every target's bundle ID and the app group derive from APP_ID_PREFIX below.
+  bundleIdPrefix: $(APP_ID_PREFIX)
+  deploymentTarget:
+    macOS: "15.0"
+  createIntermediateGroups: true
+
+packages:
+  Swapjutsu:
+    path: .
+
+settings:
+  base:
+    # The one place the reverse-DNS prefix lives (jutsustudio.com, shared with Jutsu Studio): the bundle IDs
+    # $(APP_ID_PREFIX).Swapjutsu and .debug, and the agent socket's app group
+    # $(DEVELOPMENT_TEAM).$(APP_ID_PREFIX).swapjutsu, follow it. Changing it gives the app a new sandbox container, so
+    # its settings and downloaded models start over.
+    APP_ID_PREFIX: com.jutsustudio
+    # Swift 6 language mode and the upcoming feature Package.swift enables for every target.
+    SWIFT_VERSION: "6.0"
+    SWIFT_UPCOMING_FEATURE_NONISOLATED_NONSENDING_BY_DEFAULT: YES
+    MARKETING_VERSION: "0.1.0"
+    CURRENT_PROJECT_VERSION: "1"
+    # Core ML runs on Apple Silicon only; no Intel slice.
+    ARCHS: arm64
+    ONLY_ACTIVE_ARCH: NO
+    ENABLE_HARDENED_RUNTIME: YES
+    DEAD_CODE_STRIPPING: YES
+    # Ad-hoc signing by default; a release build signs with Developer ID on top.
+    CODE_SIGN_IDENTITY: "-"
+    CODE_SIGN_STYLE: Manual
+    DEVELOPMENT_TEAM: ""
+
+targets:
+  Swapjutsu:
+    type: application
+    platform: macOS
+    # A shared scheme of the app's own: without it `-scheme Swapjutsu` can pick the package's executable of the
+    # same name and build a bare binary instead of the app.
+    scheme: {}
+    sources:
+      - path: Sources/Swapjutsu/main.swift
+      # The Finder and Dock icon, read through CFBundleIconFile from Contents/Resources.
+      - path: Sources/SwapjutsuApp/Resources/AppIcon.icns
+        buildPhase: resources
+    dependencies:
+      - package: Swapjutsu
+        product: SwapjutsuApp
+      # The local vision models' MLX implementation, which main.swift hands to the app.
+      - package: Swapjutsu
+        product: SwapjutsuMLX
+      # The binary agents run, at Contents/Helpers/swapjutsu: Contents/MacOS/swapjutsu would be the same file as
+      # Contents/MacOS/Swapjutsu on a case-insensitive disk. Re-signed on copy with the app's identity.
+      - target: swapjutsu-helper
+        embed: true
+        codeSign: true
+        copy:
+          destination: wrapper
+          subpath: Contents/Helpers
+    # The App Sandbox: the app reaches its own container, ~/Movies (the jobs in ~/Movies/Swapjutsu) and what the
+    # person drops or picks. Application Support, the models and the samples are inside the container.
+    entitlements:
+      path: build/Swapjutsu.entitlements
+      properties:
+        com.apple.security.app-sandbox: true
+        # Comfy Cloud, Hugging Face and GitHub (the models), the Higgsfield example gallery and the person's own ComfyUI.
+        com.apple.security.network.client: true
+        # Drops, open and save panels, export.
+        com.apple.security.files.user-selected.read-write: true
+        # A depth model chosen in Settings › Prep, opened again after a relaunch.
+        com.apple.security.files.bookmarks.app-scope: true
+        com.apple.security.assets.movies.read-write: true
+        # The agent socket's folder, ~/Library/Group Containers/<group>, which the unsandboxed swapjutsu binary can
+        # open too. A group outside the App Store must start with the signing team (Settings › Agents).
+        com.apple.security.application-groups:
+          - $(SWAPJUTSU_APP_GROUP)
+    info:
+      path: build/Info.plist
+      properties:
+        CFBundleDisplayName: $(APP_DISPLAY_NAME)
+        CFBundleName: $(APP_DISPLAY_NAME)
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        CFBundleIconFile: AppIcon
+        LSApplicationCategoryType: public.app-category.video
+        # Plain http to the person's own ComfyUI (Settings › Comfy › Own ComfyUI): localhost, .local names and LAN
+        # addresses, which ComfyUI serves without TLS. Everything else keeps ATS; the sandbox's network.client
+        # already allows the connection.
+        NSAppTransportSecurity:
+          NSAllowsLocalNetworking: true
+        # macOS asks before the app first reaches a device on the local network (another Mac, a GPU box).
+        NSLocalNetworkUsageDescription: >-
+          Swapjutsu connects to the ComfyUI you set up in Settings › Comfy, on this network, to render Wan 2.2
+          Animate on it.
+        # Read by the app and the swapjutsu binary to find the agent socket (AgentSocket.appGroupKey).
+        SwapjutsuAppGroup: $(SWAPJUTSU_APP_GROUP)
+        NSHumanReadableCopyright: © Swapjutsu contributors. MIT License. Unofficial, not affiliated with Higgsfield or ByteDance.
+        # Finder's Open With and drops on the Dock icon. Alternate rank: never the default app for these files.
+        CFBundleDocumentTypes:
+          - CFBundleTypeName: Video
+            CFBundleTypeRole: Viewer
+            LSHandlerRank: Alternate
+            LSItemContentTypes: [public.movie]
+          - CFBundleTypeName: Image
+            CFBundleTypeRole: Viewer
+            LSHandlerRank: Alternate
+            LSItemContentTypes: [public.image]
+    settings:
+      base:
+        PRODUCT_NAME: Swapjutsu
+        PRODUCT_BUNDLE_IDENTIFIER: $(APP_ID_PREFIX).Swapjutsu
+        APP_DISPLAY_NAME: Swapjutsu
+        SWAPJUTSU_APP_GROUP: $(DEVELOPMENT_TEAM).$(APP_ID_PREFIX).swapjutsu
+      # Debug gets its own bundle ID and name, so a Debug launch never shares data (UserDefaults, later the
+      # sandbox container) with a release build.
+      configs:
+        Debug:
+          PRODUCT_BUNDLE_IDENTIFIER: $(APP_ID_PREFIX).Swapjutsu.debug
+          APP_DISPLAY_NAME: Swapjutsu Debug
+        # Signs with exactly the entitlements above. Xcode otherwise adds com.apple.security.get-task-allow (so a
+        # debugger can attach), and notarization rejects an app that carries it. Debug keeps it.
+        Release:
+          CODE_SIGN_INJECT_BASE_ENTITLEMENTS: NO
+
+  # `swapjutsu mcp` and the rest of Sources/swapjutsu-cli: a command-line tool, not sandboxed (no entitlements), so it
+  # can start the app and open the agent socket in the app group's container. Hardened runtime like every target.
+  swapjutsu-helper:
+    type: tool
+    platform: macOS
+    sources:
+      - path: Sources/swapjutsu-cli/main.swift
+    dependencies:
+      - package: Swapjutsu
+        product: SwapjutsuMCP
+    settings:
+      base:
+        PRODUCT_NAME: swapjutsu
+        PRODUCT_BUNDLE_IDENTIFIER: $(APP_ID_PREFIX).swapjutsu.cli
+        # Only inside the app: an archive with an installed tool would be a generic archive, not an app.
+        SKIP_INSTALL: YES
+      configs:
+        # No get-task-allow, as for the app.
+        Release:
+          CODE_SIGN_INJECT_BASE_ENTITLEMENTS: NO

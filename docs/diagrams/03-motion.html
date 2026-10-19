@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Read the motion</title>
+<link rel="stylesheet" href="diagram.css">
+<style>
+  .left { flex: 1; display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+  .timeline { position: relative; height: 112px; }
+  .axis { position: absolute; left: 0; right: 0; bottom: 0; height: 18px; display: flex; justify-content: space-between;
+          font-size: 11.5px; color: var(--faint); border-top: 1px solid var(--stroke); padding-top: 4px; }
+  .beat { position: absolute; height: 26px; border-radius: 7px; padding: 0 8px; font-size: 12px; font-weight: 600;
+          display: flex; align-items: center; white-space: nowrap; overflow: hidden; }
+  .beat.span { background: rgba(242, 255, 89, 0.16); color: var(--accent); border: 1px solid rgba(242, 255, 89, 0.35); }
+  .beat.arm { background: rgba(156, 140, 255, 0.2); color: #cfc7ff; border: 1px solid rgba(156, 140, 255, 0.5); }
+  .beat.turn { background: rgba(255, 106, 213, 0.18); color: #ffb1ea; border: 1px solid rgba(255, 106, 213, 0.45); }
+  .keys { position: relative; height: 210px; }
+  .keys .media { position: absolute; top: 0; width: 112px; height: 200px; }
+  .keys .media .tag { font-size: 11px; }
+  .model { width: 360px; display: flex; flex-direction: column; gap: 10px; }
+  .model .card { padding: 14px 16px; }
+  .kv { display: grid; grid-template-columns: 70px 1fr; gap: 8px 10px; font-size: 13px; }
+  .kv dt { color: var(--faint); font-weight: 600; }
+  .kv dd { color: var(--text); }
+  .head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .head b { font-size: 15px; }
+  .note { font-size: 12.5px; color: var(--muted); }
+</style>
+</head>
+<body>
+<div class="slide">
+  <div class="kicker"><span class="step">Step 3</span> Read the motion</div>
+  <h1>Timed by the body, <em>named by a model</em></h1>
+  <p class="lede">A pose tracker measures every move with its time. A vision model on your Mac looks at exactly those frames and puts the moves into words.</p>
+  <div class="body">
+    <div class="left">
+      <div class="label">Body-pose tracker · this clip · 7 s</div>
+      <div class="timeline">
+        <!-- 7 s across 100 % -->
+        <div class="beat span" style="left: 0; width: 78.6%; top: 0">faces the camera · 0–5.5 s</div>
+        <div class="beat arm" style="left: 17.1%; width: 15%; top: 32px">left arm raised</div>
+        <div class="beat turn" style="left: 66%; width: 26%; top: 32px">turns away · 5.5 s</div>
+        <div class="beat span" style="left: 78.6%; width: 14.3%; top: 0">back to us</div>
+        <div class="beat turn" style="left: 88%; width: 12%; top: 64px">turns back</div>
+        <div class="axis"><span>0 s</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7 s</span></div>
+      </div>
+      <div class="keys">
+        <div class="media" style="left: 0"><img src="img/cloister-kf-00.00.jpg"><span class="tag">0.00 s</span></div>
+        <div class="media" style="left: 124px"><img src="img/cloister-kf-01.25.jpg"><span class="tag">1.25 s</span></div>
+        <div class="media" style="left: calc(78.6% - 112px)"><img src="img/cloister-kf-05.50.jpg"><span class="tag">5.50 s</span></div>
+        <div class="media" style="left: calc(100% - 112px)"><img src="img/cloister-kf-06.50.jpg"><span class="tag">6.50 s</span></div>
+      </div>
+      <div class="note">The frames shown to the model are the ones where a move starts, so its times come from the video, not from a guess.</div>
+    </div>
+    <div class="arrow">→</div>
+    <div class="model">
+      <div class="card">
+        <div class="head"><b>Local vision model</b><span class="chip">MLX · Qwen3-VL</span></div>
+        <dl class="kv">
+          <dt>camera</dt><dd>low-angle handheld backward tracking shot</dd>
+          <dt>beats</dt><dd>runway cross-over walk, a light left-hand flourish, turn away over the shoulder, turn back</dd>
+          <dt>shot</dt><dd>full-body shot of one person</dd>
+          <dt>feet</dt><dd>on the ground most of the clip, so contact shadows go in</dd>
+        </dl>
+      </div>
+      <div class="card">
+        <div class="head"><b>Adapted to your character</b></div>
+        <p class="note">It writes what the body does, never the dancer's own clothes: "hand at the hip", not "hand in the jeans pocket" that a skirt doesn't have. Sunglasses and hats don't carry over.</p>
+      </div>
+    </div>
+  </div>
+  <div class="footer" style="margin-top: 18px">
+    <span class="chip">Vision body pose</span><span class="chip">MLX</span><span class="chip">or Apple's on-device model</span><span class="chip free">On your Mac · free</span>
+    <span class="brand"><img src="../assets/icon.png">Swapjutsu</span>
+  </div>
+</div>
+</body>
+</html>

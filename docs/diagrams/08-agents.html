@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Agents</title>
+<link rel="stylesheet" href="diagram.css">
+<style>
+  .term { width: 610px; align-self: flex-start; padding: 0; overflow: hidden; display: flex; flex-direction: column; }
+  .bar { height: 34px; display: flex; align-items: center; gap: 7px; padding: 0 14px; border-bottom: 1px solid var(--stroke); }
+  .bar i { width: 11px; height: 11px; border-radius: 50%; background: rgba(255, 255, 255, 0.18); }
+  .bar span { margin-left: 8px; font-size: 12px; color: var(--faint); }
+  .log { padding: 16px 18px; font: 13.5px/1.75 "SF Mono", Menlo, monospace; color: var(--muted); }
+  .you { color: var(--text); }
+  .you::before { content: "> "; color: var(--accent); }
+  .tool { color: #cfc7ff; }
+  .ok { color: var(--green); }
+  .wait { color: var(--warning, #fabc25); }
+  .side { flex: 1; display: flex; flex-direction: column; gap: 12px; }
+  .budget { padding: 16px 18px; }
+  .meter { height: 12px; border-radius: 6px; background: rgba(255, 255, 255, 0.08); margin: 12px 0 8px; overflow: hidden; }
+  .meter i { display: block; height: 100%; width: 41%; background: var(--accent); border-radius: 6px; }
+  .budget .row { display: flex; justify-content: space-between; font-size: 13px; color: var(--muted); }
+  .cmd { padding: 12px 14px; font: 12.5px/1.5 "SF Mono", Menlo, monospace; color: var(--text); }
+</style>
+</head>
+<body>
+<div class="slide">
+  <div class="kicker"><span class="step">Bonus</span> Agents</div>
+  <h1>Or just <em>ask your agent</em></h1>
+  <p class="lede">The app ships an MCP server. Claude Code, or any MCP client, can prepare, quote and render, inside limits only you set.</p>
+  <div class="body">
+    <div class="card term">
+      <div class="bar"><i></i><i></i><i></i><span>Claude Code</span></div>
+      <div class="log">
+        <div class="you">put me in this clip, 480p draft</div>
+        <div><span class="tool">swapjutsu · prepare</span> dance.mov, 0–10 s</div>
+        <div><span class="tool">swapjutsu · clips</span> <span class="ok">ready</span>, 2 people, main 60%</div>
+        <div><span class="tool">swapjutsu · set_characters</span> me.jpg → person 1</div>
+        <div><span class="tool">swapjutsu · quote</span> draft ~$1.71–2.05, $2.95 left today</div>
+        <div><span class="tool">swapjutsu · render</span> max_cost $2.05 <span class="ok">rendering</span></div>
+        <div><span class="tool">swapjutsu · finalize</span> 1080p ~$9.75 <span class="wait">over budget: waits for you</span></div>
+      </div>
+    </div>
+    <div class="side">
+      <div class="card budget">
+        <div class="label">Daily agent budget</div>
+        <div class="meter"><i></i></div>
+        <div class="row"><span>$2.05 spent</span><span>$5.00 a day</span></div>
+      </div>
+      <ul class="facts">
+        <li><b>$0 until you set it</b>: agents can quote, not render.</li>
+        <li><b>Checked inside the app</b> before every paid request, so no client can skip it.</li>
+        <li><b>Can't delete or read keys</b>. Turning agents off stops them at the next call.</li>
+      </ul>
+      <div class="card cmd">claude mcp add swapjutsu -- /Applications/Swapjutsu.app/Contents/Helpers/swapjutsu mcp</div>
+    </div>
+  </div>
+  <div class="footer" style="margin-top: 22px">
+    <span class="chip">MCP</span><span class="chip">Claude Code</span><span class="chip">Any MCP client</span>
+    <span class="brand"><img src="../assets/icon.png">Swapjutsu</span>
+  </div>
+</div>
+</body>
+</html>

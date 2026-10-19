@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Read the character</title>
+<link rel="stylesheet" href="diagram.css">
+<style>
+  .refs { display: flex; gap: 12px; }
+  .refs .ref { width: 200px; }
+  .refs .stack { display: flex; flex-direction: column; gap: 12px; width: 150px; }
+  .refs .stack .media { height: 150px; }
+  .refs .stack p { font-size: 12.5px; color: var(--muted); }
+  .fields { flex: 1; display: flex; flex-direction: column; gap: 10px; }
+  .f { display: grid; grid-template-columns: 112px 1fr; gap: 12px; padding: 11px 14px; align-items: baseline; }
+  .f dt { font: 600 12px/1.3 "SF Mono", Menlo, monospace; color: var(--accent); }
+  .f dd { font-size: 13.5px; color: var(--text); }
+  .f dd small { display: block; font-size: 12px; color: var(--faint); margin-top: 3px; }
+</style>
+</head>
+<body>
+<div class="slide">
+  <div class="kicker"><span class="step">Step 4</span> Read the character</div>
+  <h1>Your character, <em>in words Seedance keeps</em></h1>
+  <p class="lede">The same local model reads your reference image: who it is, what they wear, and what should move when they do.</p>
+  <div class="body">
+    <div class="refs">
+      <div class="media ref"><img src="img/cloister-character.jpg"><span class="tag">@Image1 · your character</span></div>
+      <div class="stack">
+        <div class="media"><img src="img/cloister-face.jpg"><span class="tag">Face close-up</span></div>
+        <p>Added on its own when the face is under 35% of the image height, and tied to the character in the prompt.</p>
+      </div>
+    </div>
+    <div class="arrow">→</div>
+    <dl class="fields">
+      <div class="card f"><dt>noun</dt><dd>WOMAN</dd></div>
+      <div class="card f"><dt>appearance</dt><dd>young woman, slim build, long straight platinum-blonde hair half tied back, light eyes, soft smile</dd></div>
+      <div class="card f"><dt>traits</dt><dd>platinum-blonde hair, striped tie, black robe with green lining, grey pleated skirt, knee-high socks<small>The 5–7 things that make the character recognizable</small></dd></div>
+      <div class="card f"><dt>moving</dt><dd>pleated skirt and hair<small>Told to swing and settle with every move</small></dd></div>
+      <div class="card f"><dt>outer</dt><dd>long black robe with green lining, worn open<small>Kept in every frame, even where the dancer's silhouette is narrower</small></dd></div>
+    </dl>
+  </div>
+  <div class="footer" style="margin-top: 22px">
+    <span class="chip">MLX</span><span class="chip">Vision face landmarks</span><span class="chip">Optional cutout: Vision subject lifting</span><span class="chip free">On your Mac · free</span>
+    <span class="brand"><img src="../assets/icon.png">Swapjutsu</span>
+  </div>
+</div>
+</body>
+</html>

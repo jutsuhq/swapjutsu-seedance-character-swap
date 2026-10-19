@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Write the prompt</title>
+<link rel="stylesheet" href="diagram.css">
+<style>
+  .doc { flex: 1; padding: 18px 22px; font: 14px/1.62 "SF Mono", Menlo, monospace; color: var(--muted); overflow: hidden; }
+  .doc p + p { margin-top: 9px; }
+  .doc b { color: var(--text); font-weight: 600; }
+  .c { background: rgba(242, 255, 89, 0.16); color: var(--accent); border-radius: 4px; padding: 0 3px; }
+  .m { background: rgba(156, 140, 255, 0.22); color: #d4ccff; border-radius: 4px; padding: 0 3px; }
+  .p { background: rgba(124, 242, 154, 0.16); color: #a8f7bd; border-radius: 4px; padding: 0 3px; }
+  .legend { width: 270px; display: flex; flex-direction: column; gap: 10px; }
+  .legend .card { padding: 12px 14px; display: flex; gap: 10px; align-items: flex-start; }
+  .sw { flex: none; width: 14px; height: 14px; border-radius: 4px; margin-top: 2px; }
+  .legend b { display: block; font-size: 14px; }
+  .legend span { font-size: 12.5px; color: var(--muted); }
+</style>
+</head>
+<body>
+<div class="slide">
+  <div class="kicker"><span class="step">Step 5</span> Write the prompt</div>
+  <h1>One prompt, <em>written for you</em></h1>
+  <p class="lede">The readings fill one structured prompt: who each image is, what to replace, what to keep. It's plain text in the app: change anything, and your words win.</p>
+  <div class="body">
+    <div class="card doc">
+      <p><b>@Image1 — WOMAN</b>, the replacement WOMAN: <span class="c">young woman, slim build, long straight platinum-blonde hair half tied back</span>…</p>
+      <p><b>@Image2 — CLOISTER</b>, the replacement LOCATION: <span class="p">a Gothic stone cloister with a fan-vaulted ceiling</span>…</p>
+      <p><b>Video edit.</b> @Video1 is a motion guide: the person painted with colored depth is the performer… Keep the same single continuous 7s take, <span class="m">the same low-angle handheld backward tracking shot</span>…</p>
+      <p><b>1. REPLACE</b> the colored-depth performer (0–7s) with WOMAN from @Image1, matched beat-for-beat to the original <span class="m">runway cross-over walk, a light left-hand flourish, turn away over the shoulder</span>… <span class="c">her pleated skirt and hair</span> swing and settle naturally… <span class="c">Her long black robe with green lining</span> … never disappears…</p>
+      <p><b>2. REPLACE</b> everything painted with grey depth with CLOISTER from @Image2… Place WOMAN on <span class="p">the worn flagstone floor</span>, lit by <span class="p">soft warm daylight from the windows</span>.</p>
+      <p><b>Identity lock:</b> WOMAN's face matches @Image1 in every frame… nothing the performer wears carries over.</p>
+    </div>
+    <div class="legend">
+      <div class="card"><div class="sw" style="background: var(--accent)"></div><div><b>From your character</b><span>looks, outfit, outer layer, what swings</span></div></div>
+      <div class="card"><div class="sw" style="background: var(--info)"></div><div><b>From the motion</b><span>camera, beats in time order</span></div></div>
+      <div class="card"><div class="sw" style="background: var(--green)"></div><div><b>From the new place</b><span>layout, floor, light</span></div></div>
+      <div class="card"><div class="sw" style="background: var(--text)"></div><div><b>Built in</b><span>image roles, keep-the-take rules, identity lock</span></div></div>
+    </div>
+  </div>
+  <div class="footer" style="margin-top: 22px">
+    <span class="chip">Editable</span><span class="chip">Your instructions take precedence</span><span class="chip free">On your Mac · free</span>
+    <span class="brand"><img src="../assets/icon.png">Swapjutsu</span>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,51 @@
+{
+  "1": {
+    "class_type": "LoadVideo",
+    "_meta": { "title": "@Video1: control.mp4 from swapjutsu-prep" },
+    "inputs": { "file": "control.mp4" }
+  },
+  "2": {
+    "class_type": "LoadImage",
+    "_meta": { "title": "@Image1: the character" },
+    "inputs": { "image": "character-1.png" }
+  },
+  "3": {
+    "class_type": "ByteDance2ReferenceNodeV2",
+    "_meta": { "title": "Seedance 2.5: edit the painted person" },
+    "inputs": {
+      "model": "Seedance 2.5 Draft",
+      "model.prompt": "Replace the person painted with colored depth in @Video1 with the character in @Image1: full identity, hair, face and outfit. Keep every other pixel, the camera and the timing exactly. The depth colors are guidance only and must not appear.",
+      "model.resolution": "480p",
+      "model.ratio": "adaptive",
+      "model.duration": 5,
+      "model.generate_audio": true,
+      "model.task_type": "edit",
+      "model.output_format": "mp4",
+      "model.reference_images.image_1": ["2", 0],
+      "model.reference_videos.video_1": ["1", 0],
+      "model.auto_downscale": true,
+      "model.auto_upscale": false,
+      "seed": 0,
+      "watermark": false
+    }
+  },
+  "4": {
+    "class_type": "SaveVideo",
+    "_meta": { "title": "Seedance result" },
+    "inputs": {
+      "video": ["3", 0],
+      "filename_prefix": "swapjutsu/seedance",
+      "format": "auto",
+      "format.codec": "auto"
+    }
+  },
+  "5": {
+    "class_type": "SaveText",
+    "_meta": { "title": "draft_task_id for the Draft to Final node (drafts only)" },
+    "inputs": {
+      "text": ["3", 1],
+      "filename_prefix": "swapjutsu/draft_task_id",
+      "format": "txt"
+    }
+  }
+}

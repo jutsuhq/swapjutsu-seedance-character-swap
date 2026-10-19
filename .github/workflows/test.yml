@@ -1,0 +1,58 @@
+name: Test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: test-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    # Xcode 27, as releases are built with. The fixture clips and the depth model are not in the repo, so CI runs the
+    # synthetic suites only; SWAPJUTSU_FIXTURES=1 stays a local integration run (docs/TESTING.md).
+    runs-on: xcode-27
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      # The cache key, made once: without the MLX trait SwiftPM drops Package.resolved, which a key hashed after the
+      # build would no longer see.
+      - name: Name the build cache
+        id: cache
+        run: |
+          toolchain=$(xcodebuild -version | shasum -a 256 | cut -d ' ' -f 1)
+          echo "prefix=spm-v3-$RUNNER_OS-$RUNNER_ARCH-$toolchain-${{ hashFiles('Package.swift', 'Package.resolved') }}-" >> "$GITHUB_OUTPUT"
+      - uses: actions/cache/restore@v4
+        with:
+          path: .build
+          key: ${{ steps.cache.outputs.prefix }}${{ github.sha }}
+          restore-keys: ${{ steps.cache.outputs.prefix }}
+      # A checkout dates every file now, so the restored build would recompile every module. Each file's date comes from
+      # its content instead: an unchanged file keeps the date the cached build saw, and only edited files recompile.
+      - name: Date the sources by their content
+        run: |
+          git ls-files -s | while read -r _ blob _ file; do
+            touch -t "$(date -u -r $((946684800 + 16#${blob:0:7})) +%Y%m%d%H%M.%S)" "$file"
+          done
+      # Without the MLX trait: no test needs MLX, and its Metal kernels would take most of a cold build.
+      - name: Build
+        id: build
+        timeout-minutes: 8
+        run: swift build --build-tests --disable-default-traits
+      # Saved as soon as the build is done, so a failing test doesn't cost the next run a cold build. Caches are
+      # immutable: each revision saves its own, and the next run restores the latest compatible one.
+      - uses: actions/cache/save@v4
+        if: always() && steps.build.outcome == 'success'
+        with:
+          path: .build
+          key: ${{ steps.cache.outputs.prefix }}${{ github.sha }}
+      - name: Test
+        timeout-minutes: 3
+        # The App tests one at a time: on the runner's VM, Vision requests from several at once stall each other,
+        # though one after another they take ten seconds.
+        run: |
+          swift test --skip-build --disable-default-traits --skip SwapjutsuAppTests
+          swift test --skip-build --disable-default-traits --filter SwapjutsuAppTests --no-parallel

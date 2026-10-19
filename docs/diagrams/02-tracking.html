@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Track on the Neural Engine</title>
+<link rel="stylesheet" href="diagram.css">
+<style>
+  .col { display: flex; flex-direction: column; gap: 16px; flex: 1; min-width: 0; }
+  .strip { display: flex; gap: 8px; height: 300px; }
+  .strip .media { flex: 1; }
+  .times { display: flex; gap: 8px; margin-top: -8px; }
+  .times span { flex: 1; text-align: center; font-size: 12px; color: var(--faint); }
+  .flow { display: flex; align-items: stretch; gap: 10px; }
+  .flow .card { flex: 1; padding: 12px 14px; }
+  .flow b { display: block; font-size: 14.5px; }
+  .flow span { font-size: 12.5px; color: var(--muted); }
+  .flow .arrow { width: 28px; height: 28px; font-size: 15px; }
+  .stat { width: 300px; display: flex; flex-direction: column; gap: 14px; }
+  .stat .card { padding: 18px; }
+  .stat p { color: var(--muted); font-size: 14px; margin-top: 6px; }
+</style>
+</head>
+<body>
+<div class="slide">
+  <div class="kicker"><span class="step">Step 2</span> Track</div>
+  <h1>EdgeTAM, <em>on the Neural Engine</em></h1>
+  <p class="lede">Meta's EdgeTAM, converted to Core ML for this app and checked against the PyTorch original. It follows the person through every frame of each shot.</p>
+  <div class="body">
+    <div class="col">
+      <div class="strip">
+        <div class="media"><img src="img/cats-track-0.5.jpg"></div>
+        <div class="media"><img src="img/cats-track-2.0.jpg"></div>
+        <div class="media"><img src="img/cats-track-3.5.jpg"></div>
+        <div class="media"><img src="img/cats-track-5.0.jpg"></div>
+        <div class="media"><img src="img/cats-track-6.5.jpg"></div>
+      </div>
+      <div class="times"><span>0.5 s</span><span>2.0 s</span><span>3.5 s</span><span>5.0 s</span><span>6.5 s</span></div>
+      <div class="flow">
+        <div class="card"><b>Seed</b><span>The person's first Vision mask in the shot</span></div>
+        <div class="arrow">→</div>
+        <div class="card"><b>Memory</b><span>The seed plus the 6 latest frames</span></div>
+        <div class="arrow">→</div>
+        <div class="card"><b>Fallback</b><span>Loses the person? Vision's masks take that shot</span></div>
+      </div>
+    </div>
+    <div class="stat">
+      <div class="card"><div class="big">20–45×</div><p>faster than SAM 3.1 on the same clips, on the same Mac</p></div>
+      <div class="card"><div class="big">0</div><p>Python, CUDA or cloud GPUs. The model downloads once, then runs offline.</p></div>
+    </div>
+  </div>
+  <div class="footer" style="margin-top: 22px">
+    <span class="chip">Core ML</span><span class="chip">Neural Engine</span><span class="chip free">On your Mac · free</span>
+    <span class="brand"><img src="../assets/icon.png">Swapjutsu</span>
+  </div>
+</div>
+</body>
+</html>

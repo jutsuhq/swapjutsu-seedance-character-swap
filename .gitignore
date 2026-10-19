@@ -1,0 +1,12 @@
+.build/
+.swiftpm/
+*.xcodeproj/xcuserdata/
+# Generated from project.yml by `xcodegen generate`; scripts/build-app.sh builds into build/.
+Swapjutsu.xcodeproj/
+build/
+.DS_Store
+# Model weights come from scripts/fetch-models.sh.
+Models/
+# Fixture clips are not ours to redistribute; only fixtures.json is committed.
+Tests/SwapjutsuPrepTests/Fixtures/*
+!Tests/SwapjutsuPrepTests/Fixtures/fixtures.json

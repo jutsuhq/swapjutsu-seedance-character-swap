@@ -1,0 +1,20 @@
+{
+  "1": {
+    "class_type": "ByteDance2DraftToFinalVideoNode",
+    "_meta": { "title": "Seedance 2.5: the 1080p final of a draft" },
+    "inputs": {
+      "draft_task_id": "",
+      "watermark": false
+    }
+  },
+  "2": {
+    "class_type": "SaveVideo",
+    "_meta": { "title": "Seedance final" },
+    "inputs": {
+      "video": ["1", 0],
+      "filename_prefix": "swapjutsu/seedance-final",
+      "format": "auto",
+      "format.codec": "auto"
+    }
+  }
+}

@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Find everyone</title>
+<link rel="stylesheet" href="diagram.css">
+<style>
+  .frames { display: flex; gap: 12px; }
+  .frames .media { width: 196px; }
+  .ids { width: 200px; display: flex; flex-direction: column; gap: 10px; }
+  .id { display: flex; align-items: center; gap: 12px; padding: 10px; }
+  .id .media { width: 64px; height: 80px; flex: none; }
+  .id b { display: block; font-size: 15px; }
+  .id span { font-size: 12.5px; color: var(--muted); }
+  .dot { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 6px; }
+  .side { flex: 1; display: flex; flex-direction: column; gap: 16px; padding-top: 4px; }
+</style>
+</head>
+<body>
+<div class="slide">
+  <div class="kicker"><span class="step">Step 1</span> Find everyone</div>
+  <h1>Every person, <em>their own mask</em></h1>
+  <p class="lede">Before anything is replaced, the app works out who is in the clip and keeps each person apart, shot after shot.</p>
+  <div class="body">
+    <div class="frames">
+      <div class="media"><img src="img/cats-source.jpg"><span class="tag">Clip</span></div>
+      <div class="arrow">→</div>
+      <div class="media"><img src="img/cats-review.jpg"><span class="tag">Two people found</span></div>
+    </div>
+    <div class="ids">
+      <div class="label">Identities</div>
+      <div class="card id"><div class="media"><img src="img/cats-id-1.jpg"></div><div><b><span class="dot" style="background: var(--green)"></span>Person 1</b><span>60% of the screen time</span></div></div>
+      <div class="card id"><div class="media"><img src="img/cats-id-2.jpg"></div><div><b><span class="dot" style="background: var(--pink)"></span>Person 2</b><span>40% of the screen time</span></div></div>
+    </div>
+    <div class="side">
+      <ul class="facts">
+        <li><b>Shot cuts</b> are found where the whole frame jumps: Vision's feature print or the color histogram.</li>
+        <li><b>Each person</b> is Vision's person instance joined with its accurate matte, so patterned shirts get no holes and a headrest is never a person.</li>
+        <li><b>The same person across cuts</b> is matched by the colors inside their mask. Two people seen in one frame can never merge.</li>
+        <li><b>Who to replace</b>: the person with the most screen time, everyone, or anyone you click.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer" style="margin-top: 22px">
+    <span class="chip">Vision</span><span class="chip">GPU</span><span class="chip free">On your Mac · free</span>
+    <span class="brand"><img src="../assets/icon.png">Swapjutsu</span>
+  </div>
+</div>
+</body>
+</html>

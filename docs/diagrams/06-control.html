@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>What Seedance sees</title>
+<link rel="stylesheet" href="diagram.css">
+<style>
+  .col { flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 22px; padding-bottom: 12px; }
+  .row { display: flex; gap: 10px; align-items: center; }
+  .row .media { flex: 1; aspect-ratio: 16 / 9; }
+  .bottom { display: flex; gap: 20px; }
+  .audio { width: 430px; flex: none; display: flex; flex-direction: column; justify-content: center; gap: 10px; padding: 14px 16px; }
+  .wave { height: 34px; display: flex; align-items: center; gap: 3px; }
+  .wave i { flex: 1; border-radius: 2px; background: var(--info); }
+  .audio b { font-size: 14px; display: block; }
+  .audio span { font-size: 12.5px; color: var(--muted); }
+  ul.facts { flex: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 10px 22px; align-content: center; }
+</style>
+</head>
+<body>
+<div class="slide">
+  <div class="kicker"><span class="step">Step 6</span> Build the control video</div>
+  <h1>Seedance sees <em>the motion, not the person</em></h1>
+  <p class="lede">The person you replace is painted with depth. Seedance redraws only that: same camera, same timing, a different person. Here the place is replaced too.</p>
+  <div class="body">
+    <div class="col">
+      <div class="row">
+        <div class="media"><img src="img/dorm-source.jpg"><span class="tag">Your clip</span></div>
+        <div class="arrow">→</div>
+        <div class="media"><img src="img/dorm-control.jpg"><span class="tag">@Video1 · control</span></div>
+        <div class="arrow">→</div>
+        <div class="media"><img src="img/dorm-result.jpg"><span class="tag">Seedance draft</span></div>
+      </div>
+      <div class="bottom">
+        <div class="card audio">
+          <div><b>Vocals only, +3 semitones</b><span>for lip sync, never as the voice</span></div>
+          <div class="wave" id="wave"></div>
+        </div>
+        <ul class="facts">
+          <li><b>A silhouette from the skeleton</b>, not the clothes, so a robe has room.</li>
+          <li><b>One depth scale per shot</b>: no flicker.</li>
+          <li><b>Nothing of the performer carries over</b>: the sunglasses are gone.</li>
+          <li><b>New place</b>: the rest in grey depth, plus a photo of the place.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="footer" style="margin-top: 22px">
+    <span class="chip">Depth Anything V2 · Core ML</span><span class="chip">Core Image</span><span class="chip">AUSoundIsolation</span><span class="chip free">On your Mac · free</span>
+    <span class="brand"><img src="../assets/icon.png">Swapjutsu</span>
+  </div>
+</div>
+<script>
+  const wave = document.getElementById("wave");
+  for (let i = 0; i < 64; i++) {
+    const h = 6 + Math.abs(Math.sin(i * 0.55) * Math.cos(i * 0.21)) * 28;
+    wave.insertAdjacentHTML("beforeend", `<i style="height:${h.toFixed(0)}px"></i>`);
+  }
+</script>
+</body>
+</html>

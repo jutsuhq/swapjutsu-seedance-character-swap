@@ -12,7 +12,7 @@ Everything up to the render runs on your Mac, for free.
 [![Download for macOS](https://img.shields.io/badge/Download-macOS%20%C2%B7%20Apple%20Silicon-8b5cf6?style=for-the-badge&logo=apple&logoColor=white)](https://github.com/jutsuhq/swapjutsu-seedance-character-swap/releases/latest)
 
 [Examples](#examples) · [Install](#install) · [Quick start](#quick-start) · [How it works](#how-it-works) ·
-[Rendering](#rendering) · [Agents](#agents) · [Docs](#documentation)
+[Rendering](#rendering) · [Agents](#agents) · [Docs](#documentation) · [Website](https://jutsustudio.com/swapjutsu/)
 
 [![Latest release](https://img.shields.io/github/v/release/jutsuhq/swapjutsu-seedance-character-swap?label=release&color=8b5cf6)](https://github.com/jutsuhq/swapjutsu-seedance-character-swap/releases/latest)
 [![License: MIT](https://img.shields.io/badge/License-MIT-8b5cf6.svg)](LICENSE)
@@ -160,6 +160,13 @@ The command-line tool: [docs/CLI.md](docs/CLI.md). App bundle, tests and release
 - [CLI.md](docs/CLI.md): `swapjutsu-prep` options and output
 - [TESTING.md](docs/TESTING.md): tests and measured results
 - [benchmarks/](benchmarks/README.md): the research behind the target masks, tracking and depth, with data and ground truth
+
+Guides on jutsustudio.com:
+
+- [How to swap a character in a video with AI](https://jutsustudio.com/blog/how-to-swap-character-in-video/)
+- [Face swap vs character swap](https://jutsustudio.com/blog/face-swap-vs-character-swap/)
+- [Higgsfield Genjutsu alternatives, free and paid](https://jutsustudio.com/blog/genjutsu-alternatives/)
+- [Seedance 2.5 guide: modes, limits and cost](https://jutsustudio.com/blog/seedance-2-5-guide/)
 
 ## Disclaimer
 

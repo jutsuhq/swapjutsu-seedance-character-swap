@@ -24,7 +24,7 @@ enum GenerationStatus: Sendable, Equatable {
 }
 
 /// One generation backend: Seedance 2.5, straight through Comfy's Partner Nodes API or as a workflow on Comfy Cloud,
-/// or Wan 2.2 Animate on the person's own ComfyUI.
+/// Wan 3.0 through the same API, or Wan 2.2 Animate on the person's own ComfyUI.
 protocol GenerationProvider: Sendable {
     /// Returns the request ID. Throws `GenerationError.outcomeUnknown` when the request may have been created anyway.
     func submit(_ request: GenerationRequest) async throws -> String
@@ -64,6 +64,9 @@ enum Providers {
                 return SeedanceRoutes(
                     route: RenderRoute.current, cloud: ComfySeedance(client: ComfyClient(apiKey: key)),
                     direct: PartnerSeedance(client: PartnerSeedanceClient(apiKey: key)))
+            case .wan30:
+                guard let key = credentials.comfyKey else { throw GenerationError.noKey }
+                return PartnerWan(client: PartnerSeedanceClient(apiKey: key))
             case .wan22Animate:
                 guard let url = backend.comfyURL ?? OwnComfy.url else { throw GenerationError.noOwnComfy }
                 return OwnComfyWan(
@@ -77,6 +80,8 @@ enum Providers {
 /// The generation models the model picker offers.
 enum GenerationModel: String, CaseIterable, Identifiable, Codable, Sendable {
     case seedance25
+    /// Wan 3.0 through Comfy's Partner Nodes API, given the same depth control and characters as Seedance.
+    case wan30
     /// Wan 2.2 Animate 14B (Apache-2.0) in replacement mode, on a ComfyUI the person runs.
     case wan22Animate
 
@@ -85,6 +90,7 @@ enum GenerationModel: String, CaseIterable, Identifiable, Codable, Sendable {
     var title: String {
         switch self {
         case .seedance25: "Seedance 2.5"
+        case .wan30: "Wan 3.0"
         case .wan22Animate: "Wan 2.2 Animate"
         }
     }
@@ -92,6 +98,7 @@ enum GenerationModel: String, CaseIterable, Identifiable, Codable, Sendable {
     var detail: String {
         switch self {
         case .seedance25: "ByteDance · edit with depth control · 4–30 s · via Comfy"
+        case .wan30: "Alibaba · edit with depth control · up to 15 s · via Comfy"
         case .wan22Animate: "Alibaba Wan · open source · runs on your ComfyUI"
         }
     }
@@ -100,6 +107,7 @@ enum GenerationModel: String, CaseIterable, Identifiable, Codable, Sendable {
     var pickerTitle: String {
         switch self {
         case .seedance25: "Seedance 2.5 (Comfy Cloud)"
+        case .wan30: "Wan 3.0 (Comfy Cloud)"
         case .wan22Animate: "Wan 2.2 Animate (your ComfyUI, open source)"
         }
     }
@@ -112,18 +120,31 @@ enum GenerationModel: String, CaseIterable, Identifiable, Codable, Sendable {
     var qualities: [RenderQuality] {
         switch self {
         case .seedance25: [.draft, .final720, .final1080]
+        case .wan30: [.final480, .final720, .final1080]
         case .wan22Animate: [.final480, .final720]
         }
     }
 
-    /// The estimate to the cent: Seedance's (`SeedancePrice`), nothing for a render on the person's own machine.
+    /// The longest clip it renders, when it has a limit of its own: Wan 3.0 reads at most 15 s of reference video.
+    var maxSeconds: Double? { self == .wan30 ? WanPrice.maxSeconds : nil }
+
+    /// The estimate to the cent: Seedance's (`SeedancePrice`) or Wan's (`WanPrice`), nothing for a render on the
+    /// person's own machine.
     func price(seconds: Double, quality: RenderQuality) -> ClosedRange<Double> {
-        isLocal ? 0...0 : SeedancePrice.cents(seconds: seconds, quality: quality)
+        switch self {
+        case .seedance25: SeedancePrice.cents(seconds: seconds, quality: quality)
+        case .wan30: WanPrice.cents(seconds: seconds, quality: quality)
+        case .wan22Animate: 0...0
+        }
     }
 
     /// "~$1.71–2.05", or "$0" for a local render.
     func priceText(seconds: Double, quality: RenderQuality) -> String {
-        isLocal ? "$0" : SeedancePrice.text(seconds: seconds, quality: quality)
+        switch self {
+        case .seedance25: SeedancePrice.text(seconds: seconds, quality: quality)
+        case .wan30: SeedancePrice.text(WanPrice.estimate(seconds: seconds, quality: quality))
+        case .wan22Animate: "$0"
+        }
     }
 }
 
@@ -140,7 +161,7 @@ enum GenerationError: LocalizedError {
         switch self {
         case .noKey: "Add your Comfy API key in Settings."
         case .noOwnComfy: "Set up your own ComfyUI in Settings › Own ComfyUI to render with Wan 2.2 Animate."
-        case .rejected(let reason): "Seedance rejected the request: \(reason.prefix(300))"
+        case .rejected(let reason): "The request was rejected: \(reason.prefix(300))"
         case .outcomeUnknown(let reason): "The submit's outcome is unknown: \(reason)"
         }
     }

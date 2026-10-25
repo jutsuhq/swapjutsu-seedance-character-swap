@@ -17,7 +17,7 @@ extension AgentCommands {
         return AgentResponse(
             quote: AgentQuote(
                 clip: command.clip, quality: command.quality, seconds: seconds, low: price.lowerBound,
-                high: price.upperBound, budget: budget, model: command.model == .wan22Animate ? .wan22Animate : nil))
+                high: price.upperBound, budget: budget, model: AgentModel(model)))
     }
 
     func render(_ command: RenderCommand) throws(AgentError) -> AgentResponse {
@@ -26,7 +26,7 @@ extension AgentCommands {
         let parameters = Self.canonical(
             RenderParameters(
                 clip: command.clip, quality: command.quality, maxCost: command.maxCost,
-                model: command.model == .wan22Animate ? .wan22Animate : nil))
+                model: AgentModel(GenerationModel(command.model))))
         if let earlier = try repeatedRender(command.requestID, parameters) { return earlier }
         let model = GenerationModel(command.model)
         try Self.offers(model, command.quality)
@@ -39,6 +39,9 @@ extension AgentCommands {
                         + "Settings › Own ComfyUI.")
             }
             if let reason = JobStore.whyNotAnimatable(job) { throw .invalid(reason) }
+        }
+        if let limit = model.maxSeconds, let seconds = job.duration, seconds > limit + 0.01 {
+            throw .invalid("\(model.title) edits clips of up to \(Int(limit)) s; this one is \(Int(seconds.rounded(.up))) s.")
         }
         let missing = job.missingCharacters
         guard missing == 0 else {
@@ -160,7 +163,7 @@ extension AgentCommands {
             finalizableUntil: finalizable ? render.finalizableUntil : nil,
             origin: render.origin.map {
                 AgentRenderOrigin(client: $0.client, requestID: $0.requestID, started: $0.started, maxCost: $0.maxCost)
-            }, model: job.model(of: render) == .wan22Animate ? .wan22Animate : nil)
+            }, model: AgentModel(job.model(of: render)))
     }
 
     /// The render an earlier request with this id made, or nil when there was none. The same id with other parameters,
@@ -267,9 +270,24 @@ extension RenderQuality {
 }
 
 extension GenerationModel {
-    /// Seedance 2.5 unless the agent asked for Wan 2.2 Animate.
+    /// Seedance 2.5 unless the agent asked for another generator.
     init(_ model: AgentModel?) {
-        self = model == .wan22Animate ? .wan22Animate : .seedance25
+        switch model {
+        case nil, .seedance25: self = .seedance25
+        case .wan30: self = .wan30
+        case .wan22Animate: self = .wan22Animate
+        }
+    }
+}
+
+extension AgentModel {
+    /// Nil for Seedance 2.5, the default, so Seedance's requests keep the parameters and answers they always had.
+    init?(_ model: GenerationModel) {
+        switch model {
+        case .seedance25: return nil
+        case .wan30: self = .wan30
+        case .wan22Animate: self = .wan22Animate
+        }
     }
 }
 

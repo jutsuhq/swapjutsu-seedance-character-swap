@@ -37,8 +37,12 @@ struct RenderPlan {
     let hasOwnComfy: Bool
     let hasComfyKey: Bool
 
-    /// The generator this render goes to: the clip's, while Wan's ComfyUI passed its Check; Seedance otherwise.
-    var model: GenerationModel { hasOwnComfy ? job.model : .seedance25 }
+    /// The generator this render goes to: the clip's, except Wan 2.2 Animate without an own ComfyUI that passed its
+    /// Check, which falls back to Seedance.
+    var model: GenerationModel { job.model == .wan22Animate && !hasOwnComfy ? .seedance25 : job.model }
+
+    /// The generators step 5 offers: Wan 2.2 Animate only with an own ComfyUI.
+    var models: [GenerationModel] { hasOwnComfy ? GenerationModel.allCases : [.seedance25, .wan30] }
 
     /// The picked quality, or the generator's first when it doesn't render that one.
     var chosen: RenderQuality { model.qualities.contains(quality) ? quality : model.qualities[0] }
@@ -49,11 +53,14 @@ struct RenderPlan {
     var blocker: String? {
         if job.stage != .prepared { return "Renders once prep is done." }
         if job.isRendering { return "One render at a time; this one is on its way." }
+        if let limit = model.maxSeconds, let seconds = job.duration, seconds > limit + 0.01 {
+            return "\(model.title) edits clips of up to \(Int(limit)) s; this one is \(Int(seconds.rounded(.up))) s."
+        }
         if model == .wan22Animate { return JobStore.whyNotAnimatable(job) }
         let missing = job.missingCharacters
         if missing > 0 { return "Add \(missing == 1 ? "a character image" : "\(missing) character images") first." }
         if job.missingBackground { return "Add the image of the new background first." }
-        if model == .seedance25, !hasComfyKey { return "Add your Comfy API key in Settings to render." }
+        if !model.isLocal, !hasComfyKey { return "Add your Comfy API key in Settings to render." }
         return nil
     }
 
@@ -64,8 +71,9 @@ struct RenderPlan {
     }
 }
 
-/// Step 5: the generator, when the person set up their own ComfyUI, then Draft 480p or a final at 720p or 1080p with
-/// the price for Seedance, or 480p or 720p for $0 for Wan 2.2 Animate. The Generate button is in `RenderBar`, always
+/// Step 5: the generator (Seedance 2.5, Wan 3.0, and Wan 2.2 Animate when the person set up their own ComfyUI), then
+/// Draft 480p or a final at 720p or 1080p with the price for Seedance, a final at 480p, 720p or 1080p for Wan 3.0, or
+/// 480p or 720p for $0 for Wan 2.2 Animate. The Generate button is in `RenderBar`, always
 /// in sight under the steps.
 struct NewRender: View {
     let job: Job
@@ -87,24 +95,21 @@ struct NewRender: View {
     var body: some View {
         let plan = plan
         VStack(alignment: .leading, spacing: Theme.Spacing.medium) {
-            if plan.hasOwnComfy {
-                VStack(alignment: .leading, spacing: 6) {
-                    SegmentedControl(
-                        selection: Binding(get: { job.model }, set: { jobs.setModel($0, of: job) }),
-                        options: [(.seedance25, GenerationModel.seedance25.title), (.wan22Animate, "Wan 2.2 Animate")],
-                        isCompact: true)
-                    Text(
-                        plan.model == .wan22Animate
-                            ? "Your ComfyUI, open source · runs on your machine"
-                            : "Comfy Cloud · paid from your credits"
-                    )
-                    .font(Theme.Typography.meta)
-                    .foregroundStyle(Theme.faint)
-                }
-                .help(plan.model.pickerTitle)
+            VStack(alignment: .leading, spacing: 6) {
+                SegmentedControl(
+                    selection: Binding(get: { plan.model }, set: { jobs.setModel($0, of: job) }),
+                    options: plan.models.map { ($0, $0.title) }, isCompact: true)
+                Text(
+                    plan.model == .wan22Animate
+                        ? "Your ComfyUI, open source · runs on your machine"
+                        : "Comfy Cloud · paid from your credits"
+                )
+                .font(Theme.Typography.meta)
+                .foregroundStyle(Theme.faint)
             }
+            .help(plan.model.pickerTitle)
             ownComfyLink(plan)
-            if plan.model == .seedance25, !credentials.hasComfyKey {
+            if !plan.model.isLocal, !credentials.hasComfyKey {
                 Notice(
                     systemImage: "key", text: "Add your Comfy API key to render; prep needs none.",
                     action: ("Open Settings", { navigation.settings(.comfy) }))
@@ -168,6 +173,10 @@ struct NewRender: View {
             return "Wan 2.2 Animate replaces the person with your character and keeps the clip's light and background. "
                 + (windows > 1 ? "Renders in \(windows) windows of about 5 s; " : "")
                 + "needs a GPU with enough memory."
+        }
+        if plan.model == .wan30 {
+            return "Wan 3.0 redraws the person from the same depth control, as long as the clip (up to 15 s). No draft; "
+                + "Comfy bills the control video's seconds and the render's."
         }
         switch plan.chosen {
         case .draft: return "A quick 480p look, about 2 min. Finalize the one you like within 7 days, same motion."

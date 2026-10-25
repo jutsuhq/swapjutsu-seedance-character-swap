@@ -172,7 +172,7 @@ public struct PartnerSeedanceClient: Sendable {
     /// `maxRetryAfter` gives the refusal back at once instead of asking early, except for an in-flight create, which
     /// may still become a task. A GET uses the per-poll budget (`max_retries_per_poll`) instead.
 
-    private func call<T: Decodable>(_ method: String, _ path: String, body: Data? = nil) async throws -> T {
+    func call<T: Decodable>(_ method: String, _ path: String, body: Data? = nil) async throws -> T {
         var request = try request(method, path)
         var key = method == "GET" ? nil : Self.idempotencyKey()
         var budget = RetryBudget(policy: retry, isGet: method == "GET")

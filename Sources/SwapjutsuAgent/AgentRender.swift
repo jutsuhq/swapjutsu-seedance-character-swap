@@ -7,13 +7,16 @@ import Foundation
 
 /// What Seedance renders: a 480p draft (finalizable at 1080p within 7 days), or a final straight from the clip.
 public enum AgentQuality: String, Codable, Sendable, CaseIterable {
-    /// `final480` is Wan 2.2 Animate's only; Seedance renders `draft`, `final720`, `final1080`.
+    /// Seedance renders `draft`, `final720`, `final1080`; Wan 3.0 `final480`, `final720`, `final1080`; Wan 2.2
+    /// Animate `final480`, `final720`.
     case draft, final480, final720, final1080
 }
 
-/// The generator a render uses: Seedance 2.5 (paid, on Comfy) or Wan 2.2 Animate on the person's own ComfyUI (free).
+/// The generator a render uses: Seedance 2.5 or Wan 3.0 (paid, on Comfy), or Wan 2.2 Animate on the person's own
+/// ComfyUI (free).
 public enum AgentModel: String, Codable, Sendable, CaseIterable {
     case seedance25
+    case wan30
     case wan22Animate
 }
 

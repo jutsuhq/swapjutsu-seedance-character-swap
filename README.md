@@ -78,7 +78,7 @@ Models download on first use and are verified against pinned SHA-256 hashes.
 | 5 | Characters | Mac | The same model reads each character image; face close-ups for full-body shots | [04](docs/stages/04-faces.md) · [10](docs/stages/10-character-cutout.md) |
 | 6 | Depth | Mac | Depth Anything V2 in Core ML, one scale per shot | [07](docs/stages/07-depth.md) |
 | 7 | Control video | Mac | The person painted in depth over the original; vocals only, +3 semitones | [08](docs/stages/08-control-video.md) · [09](docs/stages/09-soundtrack.md) |
-| 8 | Render | Comfy or your GPU | Seedance 2.5, or Wan 2.2 Animate on your own ComfyUI | [11](docs/stages/11-generation.md) |
+| 8 | Render | Comfy or your GPU | Seedance 2.5 or Wan 3.0, or Wan 2.2 Animate on your own ComfyUI | [11](docs/stages/11-generation.md) |
 
 <details>
 <summary>Every step as a diagram</summary>
@@ -101,6 +101,7 @@ Why each step works the way it does: [docs/PIPELINE.md](docs/PIPELINE.md).
 | Route | Model | Billing |
 |---|---|---|
 | Direct (default) | Seedance 2.5 through Comfy's Partner Nodes API | Prepaid Comfy credits, no subscription |
+| Direct | Wan 3.0 through Comfy's Partner Nodes API, clips up to 15 s | Prepaid Comfy credits, for the control video's seconds plus the render's |
 | Comfy Cloud | Seedance 2.5 through the Comfy API | Comfy Cloud subscription |
 | Own ComfyUI | Wan 2.2 Animate, open weights | Free, on your GPU |
 

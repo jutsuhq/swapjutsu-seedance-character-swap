@@ -51,10 +51,10 @@ extension Render.Stage {
 extension Job {
     /// The render's stage, named after its generator: "Seedance rendering", "Wan rendering".
     func stageTitle(of render: Render) -> String {
-        let isWan = model(of: render) == .wan22Animate
+        let model = model(of: render)
         switch render.stage {
-        case .generating: return isWan ? "Wan rendering" : "Seedance rendering"
-        case .unknown: return isWan ? "Check your ComfyUI" : "Check Comfy"
+        case .generating: return model == .seedance25 ? "Seedance rendering" : "Wan rendering"
+        case .unknown: return model == .wan22Animate ? "Check your ComfyUI" : "Check Comfy"
         default: return render.stage.title
         }
     }
@@ -79,6 +79,9 @@ extension Job {
         if let id = render.providerJobID, PartnerSeedance.owns(id) {
             return "Stop waiting; Seedance can't cancel a started task, so it may still finish and be charged"
         }
+        if model(of: render) == .wan30 {
+            return "Stop waiting; Wan can't cancel a started task, so it may still finish and be charged"
+        }
         return "Stop waiting and cancel the render on Comfy"
     }
 
@@ -90,7 +93,9 @@ extension Job {
                 : "Send it to your ComfyUI; it costs nothing"
         }
         if render.providerJobID != nil { return "Pick the same request up again; no new credits" }
-        if render.stage == .waiting { return "Send it to Seedance now, paid from your Comfy credits" }
+        if render.stage == .waiting {
+            return "Send it to \(model(of: render).title) now, paid from your Comfy credits"
+        }
         return render.stage == .unknown
             ? "Submit a new render; check your Comfy history first, the first one may be running" : "Submit it again"
     }

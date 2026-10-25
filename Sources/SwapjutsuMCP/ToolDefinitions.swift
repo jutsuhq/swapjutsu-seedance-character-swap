@@ -82,8 +82,9 @@ extension Tool {
             """
             Estimates what a Seedance render of a clip costs, in USD: a range from Comfy's bill for drafts and its price badge for finals \
             (isEstimate). high is what max_cost and the daily agent budget are checked against; budget says how \
-            much of today's agent budget is left. model wan22Animate quotes $0: it runs on the person's own \
-            ComfyUI. Free.
+            much of today's agent budget is left. model wan30 quotes Wan 3.0 on Comfy, billed for the clip's \
+            seconds twice (the control video it reads and the render). model wan22Animate quotes $0: it runs on \
+            the person's own ComfyUI. Free.
             """
         case .render:
             """
@@ -93,7 +94,9 @@ extension Tool {
             of the person's daily agent budget (Settings › Agents, $0 unless they set one). Otherwise the render \
             is made but waits in Jobs (stage waiting, detail says why) until the person sends it. One render at a \
             time per clip. The same request_id returns the same render, also after a relaunch: repeat it to see \
-            where the render is. Results land in Library; clips lists every render. model wan22Animate renders \
+            where the render is. Results land in Library; clips lists every render. model wan30 renders with \
+            Wan 3.0 on Comfy instead, final480, final720 or final1080, clips of up to 15 s, no draft, under the \
+            same max_cost and budget checks. model wan22Animate renders \
             with Wan 2.2 Animate (open source) on the person's own ComfyUI instead, final480 or final720, for $0, \
             so it is always within max_cost and the budget; it replaces one person, so the clip must be prepared \
             with one target and its original background, and capabilities' hasOwnComfyUI must be true.
@@ -154,13 +157,17 @@ extension Tool {
 
     private static let quality: JSONValue = [
         "type": "string", "enum": .array(AgentQuality.allCases.map { .string($0.rawValue) }),
-        "description": "Seedance: draft (480p), final720 or final1080. Wan 2.2 Animate: final480 or final720.",
+        "description": .string(
+            "Seedance: draft (480p), final720 or final1080. Wan 3.0: final480, final720 or final1080. Wan 2.2 "
+                + "Animate: final480 or final720."),
     ]
 
     private static let model: JSONValue = [
         "type": "string", "enum": .array(AgentModel.allCases.map { .string($0.rawValue) }),
         "description":
-            "seedance25 (paid, on Comfy; the default) or wan22Animate (open source, on the person's own ComfyUI, $0).",
+            .string(
+                "seedance25 (paid, on Comfy; the default), wan30 (paid, on Comfy, up to 15 s) or wan22Animate (open "
+                    + "source, on the person's own ComfyUI, $0)."),
     ]
 
     private static let requestID: JSONValue = [

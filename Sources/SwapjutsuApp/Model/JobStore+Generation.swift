@@ -303,13 +303,20 @@ extension JobStore {
         }
     }
 
-    /// "seedance-cgt-…", "wan-<prompt id>": the route's prefix would repeat the name, and its ":" shows as "/" in
-    /// Finder. Renders downloaded before keep their old name in `generated`.
+    /// "seedance-cgt-…", "wan3-<task id>", "wan-<prompt id>": the route's prefix would repeat the name, and its ":"
+    /// shows as "/" in Finder. Renders downloaded before keep their old name in `generated`.
     static func downloadName(for requestID: String, model: GenerationModel = .seedance25) -> String {
-        let safe = PartnerSeedance.taskID(of: requestID).map {
-            $0.isLetter || $0.isNumber || "-_.".contains($0) ? $0 : "-"
-        }
-        return (model == .wan22Animate ? "wan-" : "seedance-") + String(safe)
+        let id =
+            PartnerWan.owns(requestID) ? String(requestID.dropFirst(PartnerWan.prefix.count))
+            : PartnerSeedance.taskID(of: requestID)
+        let safe = id.map { $0.isLetter || $0.isNumber || "-_.".contains($0) ? $0 : "-" }
+        let name =
+            switch model {
+            case .seedance25: "seedance-"
+            case .wan30: "wan3-"
+            case .wan22Animate: "wan-"
+            }
+        return name + String(safe)
     }
 
     private func poll(_ id: String, provider: any GenerationProvider) async throws -> GenerationOutput {

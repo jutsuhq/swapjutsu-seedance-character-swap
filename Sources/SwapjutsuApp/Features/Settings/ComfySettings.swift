@@ -91,6 +91,16 @@ struct ComfySettings: View {
                     SettingsRow(label: quality.title, value: SeedancePrice.text(seconds: 10, quality: quality))
                 }
             }
+            SettingsSection(
+                title: "Wan 3.0",
+                footer: "Estimates for a 10 s clip: Comfy bills the control video's seconds and the render's. Clips of "
+                    + "up to 15 s; no draft."
+            ) {
+                SettingsRow(label: "Runs on", value: "api.comfy.org · Partner Nodes", isFirst: true)
+                ForEach(GenerationModel.wan30.qualities, id: \.self) { quality in
+                    SettingsRow(label: quality.title, value: GenerationModel.wan30.priceText(seconds: 10, quality: quality))
+                }
+            }
         }
         .onChange(of: key) { isSaved = false }
         .confirmationDialog("Remove the Comfy key?", isPresented: $isConfirmingRemove) {

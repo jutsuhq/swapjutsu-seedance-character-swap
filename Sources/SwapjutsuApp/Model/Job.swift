@@ -218,7 +218,12 @@ final class Job: Identifiable {
     func name(of render: Render) -> String {
         let model = model(of: render)
         let same = renders.filter { $0.quality == render.quality && self.model(of: $0) == model }
-        let title = model == .wan22Animate ? "Wan \(render.quality.resolution)" : render.quality.title
+        let title =
+            switch model {
+            case .seedance25: render.quality.title
+            case .wan30: "Wan 3.0 \(render.quality.resolution)"
+            case .wan22Animate: "Wan \(render.quality.resolution)"
+            }
         guard render.quality.isDraft || same.count > 1, let index = same.firstIndex(where: { $0.id == render.id })
         else { return render.quality.isDraft ? "Draft" : title }
         return render.quality.isDraft ? "Draft \(index + 1)" : "\(title) (\(index + 1))"

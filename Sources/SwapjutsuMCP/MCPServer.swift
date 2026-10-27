@@ -65,7 +65,10 @@ public struct MCPServer {
                 return Self.encode(error: -32602, "Unknown tool '\(params["name"]?.string ?? "")'.", id: id)
             }
             switch await tool.command(params["arguments"]?.object ?? [:], Tool.Context(client: client, stage: stage)) {
-            case .success(let command): return Self.encode(result: result(of: await send(command)), id: id)
+            case .success(let command):
+                var response = await send(command)
+                if case .capabilities = command { response.capabilities?.noteHelper(version) }
+                return Self.encode(result: result(of: response), id: id)
             case .failure(.invalid(let message)): return Self.encode(error: -32602, message, id: id)
             case .failure(.refused(let error)):
                 return Self.encode(result: result(of: AgentResponse(error: error)), id: id)
@@ -97,7 +100,9 @@ public struct MCPServer {
         (draft first; finalize a good draft at 1080p within 7 days), and follow it with clips or by repeating the \
         same request_id. A render is sent only when the top of its estimate is within your max_cost and the \
         person's daily agent budget (Settings › Agents, $0 unless they set one); otherwise it waits in Jobs for the \
-        person to send, so tell them. library_search lists the finished drafts and finals with their files; show \
+        person to send, so tell them; repeating the request with a higher max_cost sends one held over its \
+        max_cost. Check a finished render with frames, a contact sheet of the clip, control.mp4 and the render at \
+        the same moments. library_search lists the finished drafts and finals with their files; show \
         opens a page, a clip or a result for the person. Nothing here deletes.
         """
 

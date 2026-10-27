@@ -169,12 +169,16 @@ public struct AgentRender: Codable, Equatable, Sendable {
     public var origin: AgentRenderOrigin?
     /// Set for a Wan 2.2 Animate render; Seedance's leave it out.
     public var model: AgentModel?
+    /// A finished render: how to check it.
+    public var next: String?
 
     public init(
         id: String, clip: String, quality: AgentQuality, stage: String, detail: String, low: Double, high: Double,
-        draft: String?, result: String?, finalizableUntil: Date?, origin: AgentRenderOrigin?, model: AgentModel? = nil
+        draft: String?, result: String?, finalizableUntil: Date?, origin: AgentRenderOrigin?, model: AgentModel? = nil,
+        next: String? = nil
     ) {
         self.model = model
+        self.next = next
         self.id = id
         self.clip = clip
         self.quality = quality

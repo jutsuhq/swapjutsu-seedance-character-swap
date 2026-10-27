@@ -27,6 +27,7 @@ extension Tool {
         case .finalize: "Finalize a draft at 1080p (paid)"
         case .jobAction: "Cancel or retry a render or prep"
         case .librarySearch: "Search the Library"
+        case .frames: "Check a render's frames"
         }
     }
 
@@ -34,7 +35,8 @@ extension Tool {
         switch self {
         case .capabilities:
             """
-            What the Swapjutsu app is and can do now: its version, whether a Comfy API key is saved (Seedance \
+            What the Swapjutsu app is and can do now: its version (and the helper's, with helperNote when the \
+            helper is older and the MCP server must be reconnected), whether a Comfy API key is saved (Seedance \
             renders need one; the key itself never leaves the app), whether the person's own ComfyUI is set up \
             and passed its Check (hasOwnComfyUI: render takes model wan22Animate) and the state of the depth model prep uses.
             """
@@ -92,8 +94,9 @@ extension Tool {
             person's Comfy credits: draft (480p, about 2 min, finalizable within 7 days), final720 or final1080. \
             It is sent only if the top of the estimate (quote's high) is within max_cost and within what is left \
             of the person's daily agent budget (Settings › Agents, $0 unless they set one). Otherwise the render \
-            is made but waits in Jobs (stage waiting, detail says why) until the person sends it. One render at a \
-            time per clip. The same request_id returns the same render, also after a relaunch: repeat it to see \
+            is made but waits in Jobs (stage waiting, detail says why) until the person sends it; one held only \
+            over max_cost is sent when the same request_id and parameters come again with a max_cost that covers \
+            it and still fits the budget. One render at a time per clip. The same request_id returns the same render, also after a relaunch: repeat it to see \
             where the render is. Results land in Library; clips lists every render. model wan30 renders with \
             Wan 3.0 on Comfy instead, final480, final720 or final1080, clips of up to 15 s, no draft, under the \
             same max_cost and budget checks. model wan22Animate renders \
@@ -105,7 +108,8 @@ extension Tool {
             """
             Renders a finished draft at 1080p from its Seedance task, with the same motion; only possible within 7 \
             days of the draft (finalizableUntil). Paid, and checked like render: within max_cost and the day's \
-            agent budget, or it waits for the person. The same request_id returns the same final.
+            agent budget, or it waits for the person. The same request_id returns the same final; with a higher \
+            max_cost it sends a final held over the old one.
             """
         case .jobAction:
             """
@@ -124,6 +128,14 @@ extension Tool {
             promptTruncated says so). text keeps the results whose title, version name or prompt contain every \
             word of it; quality keeps one quality. limit results a page (default 20, up to 50); pass nextCursor \
             as cursor for the next page. Free.
+            """
+        case .frames:
+            """
+            Checks a finished render: writes the same moments of the clip as it was, control.mp4 (what the \
+            generator read) and the render, each as a JPEG, and one contact sheet with a row per moment and those \
+            three columns. seconds picks the moments (up to 12, within the clip); otherwise count of them (4 by \
+            default) spread evenly. Each call writes a new folder in the clip's folder. Free; look at the sheet \
+            instead of grabbing frames yourself.
             """
         }
     }
@@ -177,7 +189,9 @@ extension Tool {
 
     private static let maxCost: JSONValue = [
         "type": "number", "minimum": 0,
-        "description": "USD: the most this render may cost, compared with the top of quote's estimate.",
+        "description": .string(
+            "USD: the most this render may cost, compared with the top of quote's estimate. Raise it on the same "
+                + "request_id to send a render held over it."),
     ]
 
     private var properties: [String: JSONValue] {
@@ -299,6 +313,18 @@ extension Tool {
                 ],
                 "cursor": ["type": "string", "description": "nextCursor from the page before."],
             ]
+        case .frames:
+            [
+                "render": ["type": "string", "description": "A finished render's id, from render, clips or library_search."],
+                "seconds": [
+                    "type": "array", "minItems": 1, "maxItems": .number(Double(FramesCommand.maxCount)),
+                    "items": ["type": "number", "minimum": 0], "description": "Moments of the clip, in seconds.",
+                ],
+                "count": [
+                    "type": "integer", "minimum": 1, "maximum": .number(Double(FramesCommand.maxCount)),
+                    "description": "Moments spread evenly when seconds is left out; 4 by default.",
+                ],
+            ]
         }
     }
 
@@ -311,6 +337,7 @@ extension Tool {
         case .correctTarget: ["clip", "frame"]
         case .render: ["clip", "quality", "request_id", "max_cost"]
         case .finalize: ["render", "request_id", "max_cost"]
+        case .frames: ["render"]
         case .jobAction: ["job", "action"]
         }
     }
@@ -321,7 +348,7 @@ extension Tool {
         case .show: ["readOnlyHint": false, "destructiveHint": false, "openWorldHint": false]
         case .prepare, .setCharacters:
             ["readOnlyHint": false, "destructiveHint": false, "idempotentHint": true, "openWorldHint": false]
-        case .prepareAgain, .correctTarget:
+        case .prepareAgain, .correctTarget, .frames:
             ["readOnlyHint": false, "destructiveHint": false, "idempotentHint": false, "openWorldHint": false]
         // They reach Seedance on Comfy and spend the person's credits, or the person's own ComfyUI.
         case .render, .finalize:

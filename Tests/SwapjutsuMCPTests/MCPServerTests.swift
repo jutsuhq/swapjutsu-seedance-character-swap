@@ -55,8 +55,10 @@ struct MCPServerTests {
             tools.compactMap { $0["name"]?.string }
                 == [
                     "capabilities", "show", "prepare", "clips", "set_characters", "prepare_again", "quote", "render",
-                    "finalize", "job_action", "library_search", "correct_target",
+                    "finalize", "job_action", "library_search", "correct_target", "frames",
                 ])
+        #expect(tools[12]["inputSchema"]?["required"] == ["render"])
+        #expect(tools[12]["inputSchema"]?["properties"]?["count"]?["maximum"] == 12)
         #expect(tools[11]["inputSchema"]?["required"] == ["clip", "frame"])
         #expect(tools[7]["inputSchema"]?["required"] == ["clip", "quality", "request_id", "max_cost"])
         #expect(tools[7]["annotations"]?["openWorldHint"] == true)
@@ -83,7 +85,10 @@ struct MCPServerTests {
         let info = try await call(
             &server, #"{"jsonrpc":"2.0","id":3,"method":"tools/call","params":{"name":"capabilities"}}"#)
         let expected: JSONValue = [
-            "capabilities": ["appVersion": "0.1.0", "depthModel": "ready", "hasComfyKey": true, "protocolVersion": 1]
+            "capabilities": [
+                "appVersion": "0.1.0", "depthModel": "ready", "hasComfyKey": true, "protocolVersion": 1,
+                "helperVersion": "0.1.0",
+            ]
         ]
         #expect(info?["result"]?["isError"] == false)
         // The app's request id is the binary's business, not the client's.
@@ -96,6 +101,24 @@ struct MCPServerTests {
             #"{"jsonrpc":"2.0","id":4,"method":"tools/call","params":{"name":"show","arguments":{"screen":"jobs"}}}"#)
         #expect(shown?["result"]?["structuredContent"] == ["shown": "jobs"])
         #expect(sent == [.capabilities, .show(.screen(.jobs))])
+    }
+
+    /// An MCP client keeps the helper it started, so after an update the agent may talk to an older one.
+    @Test func anOlderHelperTellsTheAgentToReconnect() async throws {
+        var server = MCPServer(version: "0.1.9") { _ in
+            AgentResponse(capabilities: AgentCapabilities(appVersion: "0.1.10", hasComfyKey: true, depthModel: .ready))
+        }
+        let info = try await call(
+            &server, #"{"jsonrpc":"2.0","id":3,"method":"tools/call","params":{"name":"capabilities"}}"#)
+        let capabilities = info?["result"]?["structuredContent"]?["capabilities"]
+        #expect(capabilities?["helperVersion"] == "0.1.9")
+        #expect(capabilities?["helperNote"]?.string?.contains("Reconnect the swapjutsu MCP server") == true)
+
+        for (helper, app) in [("0.1.10", "0.1.10"), ("0.2.0", "0.1.10"), ("development", "0.2.0"), ("0.1.0", "development")] {
+            var answer = AgentCapabilities(appVersion: app, hasComfyKey: true, depthModel: .ready)
+            answer.noteHelper(helper)
+            #expect(answer.helperNote == nil, "\(helper) with app \(app)")
+        }
     }
 
     @Test func anAppErrorIsAToolErrorWithWhatToDoNext() async throws {
@@ -272,10 +295,12 @@ struct MCPPrepToolTests {
         _ = try await call(&server, "library_search", #"{}"#)
         _ = try await call(
             &server, "library_search", #"{"text":"beach","quality":"final1080","limit":5,"cursor":"r9"}"#)
+        _ = try await call(&server, "frames", #"{"render":"r1","seconds":[0.5,2]}"#)
         #expect(
             commands == [
                 .show(.clip("c1")), .show(.result("r1")), .librarySearch(LibrarySearchCommand()),
                 .librarySearch(LibrarySearchCommand(text: "beach", quality: .final1080, limit: 5, cursor: "r9")),
+                .frames(FramesCommand(render: "r1", seconds: [0.5, 2])),
             ])
     }
 
@@ -293,6 +318,7 @@ struct MCPPrepToolTests {
         ("prepare_again", #"{"clip":"c","target":"nobody"}"#, "bad_request", "target"),
         ("library_search", #"{"limit":"many"}"#, "bad_request", "limit"),
         ("library_search", #"{"quality":"best"}"#, "bad_request", "quality"),
+        ("frames", #"{"count":2}"#, "bad_request", "needs render"),
     ])
     func badArgumentsAreToolErrorsAndNothingIsSent(
         tool: String, arguments: String, code: String, says: String

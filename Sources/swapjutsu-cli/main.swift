@@ -22,7 +22,7 @@ let usage = """
 
       mcp         A Model Context Protocol server on stdin and stdout, with the tools
                   capabilities, show, prepare, clips, set_characters, prepare_again,
-                  quote, render, finalize, job_action and library_search. Add it to
+                  quote, render, finalize, job_action, library_search and frames. Add it to
                   Claude Code with:
                     claude mcp add swapjutsu -- /Applications/Swapjutsu.app/Contents/Helpers/swapjutsu mcp
       --version   The version of the app this binary is bundled in.

@@ -231,7 +231,7 @@ enum JobFiles {
         return file
     }
 
-    private static func writeJPEG(_ image: CGImage, to file: URL) throws {
+    static func writeJPEG(_ image: CGImage, to file: URL) throws {
         guard
             let destination = CGImageDestinationCreateWithURL(file as CFURL, UTType.jpeg.identifier as CFString, 1, nil)
         else { throw CocoaError(.fileWriteUnknown) }

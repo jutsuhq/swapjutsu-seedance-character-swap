@@ -36,6 +36,30 @@ extension JobStore {
             + "render it."
     }
 
+    /// Whether the render waits for the person only because its estimate is above the agent's `maxCost`.
+    func isHeldOverMaxCost(_ id: UUID, of job: Job) -> Bool {
+        guard let render = job.render(id), render.stage == .waiting, let origin = render.origin,
+            let price = price(of: render, in: job)
+        else { return false }
+        return Self.cents(price.upperBound) > Self.cents(origin.maxCost)
+    }
+
+    /// An agent's repeat of its request with a higher `maxCost`: a render held over the old one takes the new one and
+    /// is sent, checked again like any agent send, so a limit still too low or a spent budget holds it with the new
+    /// reason. A render held for anything else, or already on its way, is left as it is. The check and the change run
+    /// in one turn of the main actor, so a repeat that comes twice, or the person's Send at the same moment, finds the
+    /// render moved on and leaves it alone.
+    func raiseAgentMaxCost(_ id: UUID, of job: Job, to maxCost: Double, parameters: String) {
+        guard isHeldOverMaxCost(id, of: job), let old = job.render(id)?.origin?.maxCost, maxCost > old else { return }
+        job.update(id) {
+            $0.origin?.maxCost = maxCost
+            $0.origin?.parameters = parameters
+        }
+        save(job)
+        guard let render = job.render(id) else { return }
+        retry(render, of: job, by: .agent)
+    }
+
     /// What agents' sends on `day` take of the budget: each send the guard let through, by its render's upper bound
     /// then; a render sent again counts again. From the ledger, so a dismissed render or a removed clip still counts.
     func agentSpent(on day: Date = Date()) -> Double {

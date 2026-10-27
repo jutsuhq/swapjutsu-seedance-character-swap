@@ -36,6 +36,7 @@ struct AgentCommands {
         case .finalize(let fields): return try finalize(fields)
         case .jobAction(let fields): return try jobAction(fields)
         case .librarySearch(let fields): return try librarySearch(fields)
+        case .frames(let fields): return try await frames(fields)
         // Its bytes follow the line, so the server reads it itself (`AgentServer.receiveUpload`).
         case .upload: throw .badRequest("upload is read by the socket, with the bytes that follow it")
         }

@@ -40,13 +40,16 @@ says rather than guessing.
    is checked against; `budget.remaining` is what is left of today's agent budget. Tell the person the estimate.
 6. **Drafts first.** `render` with `quality: draft` (480p, about 2 min, cheapest), a new `request_id` and a `max_cost`
    no lower than the quote's `high`. Follow it with `clips` or by repeating the same `render` request. Show the draft
-   to the person (`show` with `result`, or the `result` path). Only when they like it, `finalize` it at 1080p (same
+   to the person (`show` with `result`, or the `result` path), and check it yourself with `frames`: a contact sheet of
+   the clip, `control.mp4` and the render at the same moments. Only when they like it, `finalize` it at 1080p (same
    motion, within the draft's 7 days, `finalizableUntil`), with its own `request_id` and `max_cost`. Render a
    `final720` or `final1080` straight from the clip only when the person asks for it.
 7. **Respect "Waiting for you".** A render whose estimate is over your `max_cost` or over what is left of the daily
    agent budget is made but not sent: its `stage` is `waiting` and `detail` says why. The budget is $0 until the person
    sets one in Settings › Agents. Don't try to get around it with another request: tell the person, who can send it
-   in Swapjutsu › Jobs with one click, or raise the budget. A render in stage `unknown` or one the person started is
+   in Swapjutsu › Jobs with one click, or raise the budget. If it waits only for your `max_cost` and the person agrees
+   to a higher one, repeat the same request (same `request_id`) with that `max_cost`: it is sent if the new limit
+   covers `high` and fits the budget. A render in stage `unknown` or one the person started is
    theirs to retry (`needs_person`).
 8. **Find what was made.** `library_search` lists finished drafts and finals, newest first, with the video's `file`
    path (in `~/Movies/Swapjutsu`, with the clip's own soundtrack), the render and clip ids, quality, when it was made,

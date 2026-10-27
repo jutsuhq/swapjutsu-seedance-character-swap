@@ -27,7 +27,7 @@ extension AgentCommands {
             RenderParameters(
                 clip: command.clip, quality: command.quality, maxCost: command.maxCost,
                 model: AgentModel(GenerationModel(command.model))))
-        if let earlier = try repeatedRender(command.requestID, parameters) { return earlier }
+        if let earlier = try repeatedRender(command.requestID, parameters, maxCost: command.maxCost) { return earlier }
         let model = GenerationModel(command.model)
         try Self.offers(model, command.quality)
         let job = try job(command.clip)
@@ -62,7 +62,7 @@ extension AgentCommands {
     func finalize(_ command: FinalizeCommand) throws(AgentError) -> AgentResponse {
         try Self.check(command.requestID, maxCost: command.maxCost)
         let parameters = Self.canonical(FinalizeParameters(render: command.render, maxCost: command.maxCost))
-        if let earlier = try repeatedRender(command.requestID, parameters) { return earlier }
+        if let earlier = try repeatedRender(command.requestID, parameters, maxCost: command.maxCost) { return earlier }
         let (job, draft) = try findRender(command.render)
         if let reason = Self.whyNotFinalizable(draft, of: job) {
             throw AgentError(
@@ -163,19 +163,44 @@ extension AgentCommands {
             finalizableUntil: finalizable ? render.finalizableUntil : nil,
             origin: render.origin.map {
                 AgentRenderOrigin(client: $0.client, requestID: $0.requestID, started: $0.started, maxCost: $0.maxCost)
-            }, model: AgentModel(job.model(of: render)))
+            }, model: AgentModel(job.model(of: render)),
+            next: render.stage == .done && render.result != nil
+                ? "Check it with frames (render \(render.id.uuidString)): the clip, control.mp4 and the render side by side."
+                : nil)
     }
 
     /// The render an earlier request with this id made, or nil when there was none. The same id with other parameters,
-    /// or one a `prepare` already used, is refused.
-    private func repeatedRender(_ requestID: String, _ parameters: String) throws(AgentError) -> AgentResponse? {
+    /// or one a `prepare` already used, is refused. With only `maxCost` changed it is the same request: a higher one
+    /// lifts the render's hold over its old `maxCost` (`JobStore.raiseAgentMaxCost`), anything else answers the render
+    /// as it is.
+    private func repeatedRender(
+        _ requestID: String, _ parameters: String, maxCost: Double
+    ) throws(AgentError) -> AgentResponse? {
         if !jobs.jobs(forRequest: requestID).isEmpty { throw .requestConflict(requestID) }
         for job in jobs.jobs {
             guard let earlier = job.renders(forRequest: requestID).first else { continue }
-            guard earlier.origin?.parameters == parameters else { throw .requestConflict(requestID) }
+            if earlier.origin?.parameters != parameters {
+                guard let kept = earlier.origin?.parameters, Self.sameButMaxCost(kept, parameters) else {
+                    throw .requestConflict(requestID)
+                }
+                jobs.raiseAgentMaxCost(earlier.id, of: job, to: maxCost, parameters: parameters)
+            }
             return AgentResponse(renders: [renderInfo(earlier.id, of: job)].compactMap(\.self))
         }
         return nil
+    }
+
+    /// Whether two canonical requests differ in `maxCost` alone.
+    static func sameButMaxCost(_ one: String, _ other: String) -> Bool {
+        func withoutMaxCost(_ json: String) -> NSDictionary? {
+            guard var object = try? JSONSerialization.jsonObject(with: Data(json.utf8)) as? [String: Any] else {
+                return nil
+            }
+            object["maxCost"] = nil
+            return object as NSDictionary
+        }
+        guard let one = withoutMaxCost(one), let other = withoutMaxCost(other) else { return false }
+        return one == other
     }
 
     func findRender(_ id: String) throws(AgentError) -> (Job, Render) {

@@ -15,17 +15,18 @@ If the app is not running, the first call starts it in the background.
 
 | Tool | Description |
 |---|---|
-| `capabilities` | App version, whether a Comfy key is saved, and the depth model's state |
+| `capabilities` | App version, whether a Comfy key is saved, and the depth model's state; the helper's version, with `helperNote` when it is older than the app and the MCP server must be reconnected |
 | `show` | Opens a page (`create`, `jobs`, `library`, `settings`), a clip in Create or a result in Library, and brings the window forward |
 | `prepare` | Prepares a `video` in one or more 4–30 s `ranges`, with `target`, `face_guide` and `control`; returns one clip per range. A `request_id` makes the call idempotent, including across relaunches |
 | `clips` | Status of one clip or all, waiting up to 60 s for preparation: stage, progress, detected people with a face crop and screen share, warnings, and the paths of `control.mp4` and `review.mp4` |
 | `set_characters` | Sets a character image per replaced person, Cut out characters and the prompt |
 | `prepare_again` | Re-prepares a clip with a different `target`, `face_guide` or `control` |
 | `quote` | Estimated cost of rendering a clip at `draft`, `final720` or `final1080`, and the remaining daily agent budget |
-| `render` | Paid render of a prepared clip, with a `request_id` and a `max_cost` |
+| `render` | Paid render of a prepared clip, with a `request_id` and a `max_cost`; repeating the request with a higher `max_cost` sends a render held over the old one |
 | `finalize` | Paid 1080p final of a finished draft within its 7-day window, with a `request_id` and a `max_cost` |
 | `job_action` | Cancels or retries a render or a clip's preparation |
 | `library_search` | Finished drafts and finals, newest first, with file paths, ids, quality, dates, length and prompt; supports `text` and `quality` filters and paging |
+| `frames` | Free check of a finished render: the clip, `control.mp4` and the render at the same moments, as JPEGs and one contact sheet in a new folder of the clip's folder |
 
 ## Spending controls
 
@@ -33,7 +34,8 @@ Agents can spend only within Settings › Agents › Daily agent budget, which i
 can request quotes but not render. Before every paid request an agent makes, including retries, the app checks the
 upper bound of the price estimate against the render's `max_cost` and against the remaining daily budget, counting
 agent renders already in flight. A render that exceeds either limit waits in Jobs under "Waiting for you" with the
-reason, and only you can send it. Your own renders do not count against the agent budget. Jobs shows which agent
+reason, and only you can send it, unless it waits only for its `max_cost` and the agent repeats the request with
+a higher one that covers the estimate and still fits the budget. Your own renders do not count against the agent budget. Jobs shows which agent
 started each clip or render, when, and the cost it allowed.
 
 Agents cannot:

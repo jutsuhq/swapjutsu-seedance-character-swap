@@ -44,6 +44,8 @@ public enum AgentCommand: Equatable, Sendable {
     case jobAction(JobActionCommand)
     /// Finished drafts and finals, newest first, a page at a time.
     case librarySearch(LibrarySearchCommand)
+    /// A finished render beside its clip and control.mp4 at the same moments, as a contact sheet; free.
+    case frames(FramesCommand)
 
     public var name: String {
         switch self {
@@ -60,6 +62,7 @@ public enum AgentCommand: Equatable, Sendable {
         case .finalize: "finalize"
         case .jobAction: "job_action"
         case .librarySearch: "library_search"
+        case .frames: "frames"
         }
     }
 }
@@ -101,6 +104,7 @@ public struct AgentRequest: Codable, Equatable, Sendable {
         case "finalize": command = .finalize(try FinalizeCommand(from: decoder))
         case "job_action": command = .jobAction(try JobActionCommand(from: decoder))
         case "library_search": command = .librarySearch(try LibrarySearchCommand(from: decoder))
+        case "frames": command = .frames(try FramesCommand(from: decoder))
         default: throw AgentError.unknownCommand(name)
         }
     }
@@ -124,6 +128,7 @@ public struct AgentRequest: Codable, Equatable, Sendable {
         case .finalize(let fields): try fields.encode(to: encoder)
         case .jobAction(let fields): try fields.encode(to: encoder)
         case .librarySearch(let fields): try fields.encode(to: encoder)
+        case .frames(let fields): try fields.encode(to: encoder)
         }
     }
 }
@@ -142,12 +147,13 @@ public struct AgentResponse: Codable, Equatable, Sendable {
     /// render, finalize and job_action: the render; clips: every render of the clips; show of a result.
     public var renders: [AgentRender]?
     public var library: AgentLibraryPage?
+    public var frames: AgentFrames?
     public var error: AgentError?
 
     public init(
         id: String? = nil, capabilities: AgentCapabilities? = nil, shown: AgentScreen? = nil,
         clips: [AgentClip]? = nil, uploaded: String? = nil, quote: AgentQuote? = nil, renders: [AgentRender]? = nil,
-        library: AgentLibraryPage? = nil, error: AgentError? = nil
+        library: AgentLibraryPage? = nil, frames: AgentFrames? = nil, error: AgentError? = nil
     ) {
         self.id = id
         self.capabilities = capabilities
@@ -157,6 +163,7 @@ public struct AgentResponse: Codable, Equatable, Sendable {
         self.quote = quote
         self.renders = renders
         self.library = library
+        self.frames = frames
         self.error = error
     }
 }
@@ -175,6 +182,10 @@ public struct AgentCapabilities: Codable, Equatable, Sendable {
     /// Whether the person's own ComfyUI is set up and passed its Check (Settings › Own ComfyUI), so `render` takes
     /// model `wan22Animate`.
     public var hasOwnComfyUI: Bool?  // swiftlint:disable:this discouraged_optional_boolean
+    /// The `swapjutsu` helper's own version, added by the helper (`noteHelper`); the app leaves it out.
+    public var helperVersion: String?
+    /// Added by a helper older than the app: what the agent should do about it.
+    public var helperNote: String?
 
     public init(
         appVersion: String, hasComfyKey: Bool, depthModel: ModelState,
@@ -186,6 +197,26 @@ public struct AgentCapabilities: Codable, Equatable, Sendable {
         self.hasComfyKey = hasComfyKey
         self.depthModel = depthModel
         self.hasOwnComfyUI = hasOwnComfyUI
+    }
+
+    /// The helper `version` that relays this answer. An MCP client keeps the helper process it started, so after the
+    /// app is updated it can run an older helper, with that version's tools, until it reconnects.
+    public mutating func noteHelper(_ version: String) {
+        helperVersion = version
+        helperNote =
+            Self.isOlder(version, than: appVersion)
+            ? "This swapjutsu helper is \(version), older than Swapjutsu \(appVersion): the MCP client still runs the "
+                + "helper it started before the app was updated, with that version's tools. Reconnect the swapjutsu "
+                + "MCP server (/mcp in Claude Code, or restart the client) to get this version's tools."
+            : nil
+    }
+
+    /// Whether release `helper` is older than release `app`, compared as numbers (0.2.10 after 0.2.9); a development
+    /// build or a version that isn't a number is never called older.
+    static func isOlder(_ helper: String, than app: String) -> Bool {
+        let isRelease = { (version: String) in version.first?.isNumber == true }
+        guard isRelease(helper), isRelease(app) else { return false }
+        return helper.compare(app, options: .numeric) == .orderedAscending
     }
 }
 

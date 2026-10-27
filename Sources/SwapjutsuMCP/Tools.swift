@@ -12,6 +12,7 @@ enum Tool: String, CaseIterable {
     case jobAction = "job_action"
     case librarySearch = "library_search"
     case correctTarget = "correct_target"
+    case frames
 
     /// What a call needs besides its arguments.
     struct Context {
@@ -83,6 +84,8 @@ enum Tool: String, CaseIterable {
             return .librarySearch(
                 LibrarySearchCommand(text: given.text, quality: given.quality, limit: given.limit, cursor: given.cursor)
             )
+        case .frames:
+            return .frames(try decode(FramesArguments.self, arguments).command)
         }
     }
 
@@ -245,4 +248,12 @@ private struct LibrarySearchArguments: Decodable {
     var quality: AgentQuality?
     var limit: Int?
     var cursor: String?
+}
+
+private struct FramesArguments: Decodable {
+    var render: String
+    var seconds: [Double]?
+    var count: Int?
+
+    var command: FramesCommand { FramesCommand(render: render, seconds: seconds, count: count) }
 }

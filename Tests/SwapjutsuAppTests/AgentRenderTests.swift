@@ -159,12 +159,8 @@ struct AgentRenderTests {
         let (store, commands) = make(FakeProvider(statuses: []))
         let job = try await prepared(store)
         _ = try await commands.run(.render(request(job, "one", maxCost: 2)))
-        for other in [
-            request(job, "one", maxCost: 3), request(job, "one", quality: .final720, maxCost: 2),
-        ] {
-            await #expect(throws: AgentError.Code.requestConflict) {
-                try await code { try await commands.run(.render(other)) }
-            }
+        await #expect(throws: AgentError.Code.requestConflict) {
+            try await code { try await commands.run(.render(request(job, "one", quality: .final720, maxCost: 2))) }
         }
         let finalize = FinalizeCommand(render: job.renders[0].id.uuidString, requestID: "one", maxCost: 2)
         await #expect(throws: AgentError.Code.requestConflict) {

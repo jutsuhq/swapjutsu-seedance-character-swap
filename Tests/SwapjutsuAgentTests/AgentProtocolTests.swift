@@ -18,6 +18,8 @@ struct AgentProtocolTests {
             AgentRequest(.show(.clip("c1")), id: "s"), AgentRequest(.show(.result("r1"))),
             AgentRequest(.librarySearch(LibrarySearchCommand())),
             AgentRequest(.librarySearch(LibrarySearchCommand(text: "beach", quality: .draft, limit: 5, cursor: "x"))),
+            AgentRequest(.frames(FramesCommand(render: "r1"))),
+            AgentRequest(.frames(FramesCommand(render: "r1", seconds: [0.25, 1.5], count: 2))),
         ]
         for request in [AgentRequest(.capabilities, id: "a")] + shows + library {
             let (id, decoded) = AgentWire.request(from: try AgentWire.line(request).dropLast())

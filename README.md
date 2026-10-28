@@ -4,7 +4,7 @@
 
 # Swapjutsu
 
-**Open-source character swap for video, native on macOS.**
+**Free, open-source app to swap a character in a video on Mac. No watermark.**
 
 Put any character into any clip. The camera, the moves and the timing stay; the person changes.
 Everything up to the render runs on your Mac, for free.

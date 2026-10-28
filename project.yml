@@ -23,8 +23,8 @@ settings:
     # Swift 6 language mode and the upcoming feature Package.swift enables for every target.
     SWIFT_VERSION: "6.0"
     SWIFT_UPCOMING_FEATURE_NONISOLATED_NONSENDING_BY_DEFAULT: YES
-    MARKETING_VERSION: "0.1.0"
-    CURRENT_PROJECT_VERSION: "1"
+    MARKETING_VERSION: "0.2.0"
+    CURRENT_PROJECT_VERSION: "2"
     # Core ML runs on Apple Silicon only; no Intel slice.
     ARCHS: arm64
     ONLY_ACTIVE_ARCH: NO

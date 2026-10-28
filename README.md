@@ -172,6 +172,7 @@ Guides on jutsustudio.com:
 ## Related
 
 - [Jutsu Studio](https://github.com/jutsuhq/jutsu-studio): the open-source Higgsfield desktop app for Mac
+- [Kawarimi](https://github.com/jutsuhq/kawarimi-local-character-swap): the same character swap on Windows and Linux, local on your own NVIDIA GPU with Wan 2.2 Animate
 - [Content Factory](https://github.com/jutsuhq/content-factory): open-source faceless video generator for Shorts, TikTok and Reels
 - [EdgeTAM Core ML](https://github.com/jutsuhq/edgetam-coreml): EdgeTAM video segmentation in Core ML, on the Apple Neural Engine
 - [Higgsfield Gateway](https://github.com/jutsuhq/higgsfield-gateway): a budget-capped Higgsfield API gateway on Cloudflare Workers

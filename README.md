@@ -169,6 +169,15 @@ Guides on jutsustudio.com:
 - [Higgsfield Genjutsu alternatives, free and paid](https://jutsustudio.com/blog/genjutsu-alternatives/)
 - [Seedance 2.5 guide: modes, limits and cost](https://jutsustudio.com/blog/seedance-2-5-guide/)
 
+## Related
+
+- [Jutsu Studio](https://github.com/jutsuhq/jutsu-studio): the open-source Higgsfield desktop app for Mac
+- [Content Factory](https://github.com/jutsuhq/content-factory): open-source faceless video generator for Shorts, TikTok and Reels
+- [EdgeTAM Core ML](https://github.com/jutsuhq/edgetam-coreml): EdgeTAM video segmentation in Core ML, on the Apple Neural Engine
+- [Higgsfield Gateway](https://github.com/jutsuhq/higgsfield-gateway): a budget-capped Higgsfield API gateway on Cloudflare Workers
+- [AI video API prices](https://github.com/jutsuhq/video-api-prices): what one second of AI video costs at 30+ providers, updated daily
+- [awesome-higgsfield](https://github.com/jutsuhq/awesome-higgsfield): tools, SDKs, agent skills and apps for Higgsfield
+
 ## Disclaimer
 
 Unofficial and community-built. Not affiliated with, endorsed by, or connected to Higgsfield AI, ByteDance or

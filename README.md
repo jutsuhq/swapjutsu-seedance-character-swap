@@ -4,10 +4,9 @@
 
 # Swapjutsu
 
-**Free, open-source app to swap a character in a video on Mac. No watermark.**
-
-Put any character into any clip. The camera, the moves and the timing stay; the person changes.
-Everything up to the render runs on your Mac, for free.
+**Swapjutsu is a free, open-source app to swap a character in a video on Mac, with no watermark.** It runs on
+macOS 15+ with Apple Silicon. A 7 s Seedance 2.5 draft costs $1.19 in Comfy credits; Wan 2.2 Animate on your own GPU
+costs $0.
 
 [![Download for macOS](https://img.shields.io/badge/Download-macOS%20%C2%B7%20Apple%20Silicon-8b5cf6?style=for-the-badge&logo=apple&logoColor=white)](https://github.com/jutsuhq/swapjutsu-seedance-character-swap/releases/latest)
 
@@ -22,6 +21,36 @@ Everything up to the render runs on your Mac, for free.
 [![Unofficial](https://img.shields.io/badge/unofficial-not%20affiliated%20with%20Higgsfield%20or%20ByteDance-e879f9)](#disclaimer)
 
 </div>
+
+## At a glance
+
+| | |
+|---|---|
+| Platform | macOS 15 or later, Apple Silicon. Signed and notarized DMG, 11 MB (0.2.0) |
+| Requirements | Prep: about 3–5 s per second of video and 250–500 MB of memory on an idle M4. Local prompt writer: 16 GB of memory. Render: Comfy credits, a Comfy Cloud subscription, or your own ComfyUI with a capable GPU |
+| License | MIT |
+| Cost per video | App: free. Seedance 2.5 draft at 480p: $1.19 for 7 s, $0.85 for 5 s (Comfy credits, about $0.17 a second). Wan 2.2 Animate on your own ComfyUI: $0 |
+| Models | Render: Seedance 2.5, Wan 3.0 (clips up to 15 s), or Wan 2.2 Animate on your ComfyUI. On the Mac: EdgeTAM in Core ML, Depth Anything V2, and Qwen3-VL 8B or one of four other MLX prompt writers |
+| Input and output | A 4–30 s clip and one image per person. A 480p draft, then Finalize 1080p within 7 days with the same motion |
+| Install | Drag `Swapjutsu-<version>.dmg` to Applications, then check it: `shasum -a 256 -c Swapjutsu-<version>.dmg.sha256` |
+| Download | [Latest release](https://github.com/jutsuhq/swapjutsu-seedance-character-swap/releases/latest) |
+| Website | [jutsustudio.com/swapjutsu](https://jutsustudio.com/swapjutsu/) |
+
+## Compared with
+
+| | Swapjutsu | Viggle | Higgsfield Recast | Magic Hour Character Replace |
+|---|---|---|---|---|
+| Runs on | A native Mac app; prep on the Mac, render on Comfy or your ComfyUI | Browser and phones, no native Mac app | Browser, on higgsfield.ai | Web and API |
+| Price | $1.19 per 7 s Seedance draft; $0 with Wan on your GPU | Paid plans from $7.99 a month (Pro) | Not published; paid with Higgsfield plan credits | About $1.20 per 10 s at 480p |
+| Watermark | None | None on paid plans | On free accounts | Not checked |
+| Account | None of ours; a Comfy account for Seedance | Required | Required | Not checked |
+| Source | MIT, on GitHub | Closed | Closed | Closed |
+
+What Swapjutsu does not do: run on Windows, Linux or Intel Macs (use
+[Kawarimi](https://github.com/jutsuhq/kawarimi-local-character-swap) on Windows and Linux), render without Comfy's
+cloud or a ComfyUI server, or take clips over 30 s. A Seedance render needs a Comfy account and credits. Competitor facts come from
+viggle.ai/pricing (checked 2026-11-14) and from
+[jutsustudio.com](https://jutsustudio.com/blog/best-character-swap-tools/) (checked October 2026); prices change.
 
 ![Swapjutsu's Create screen: a prepared clip, its Seedance draft and the character that replaced the dancer](docs/assets/app.png)
 

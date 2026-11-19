@@ -6,7 +6,8 @@
 
 **Swapjutsu is a free, open-source app to swap a character in a video on Mac, with no watermark.** It runs on
 macOS 15+ with Apple Silicon. A 7 s Seedance 2.5 draft costs $1.19 in Comfy credits; Wan 2.2 Animate on your own GPU
-costs $0.
+costs $0. It is a Seedance 2.5 character swap app and a free Viggle and Higgsfield Recast alternative.
+Guide, examples and FAQ: [jutsustudio.com/swapjutsu](https://jutsustudio.com/swapjutsu/).
 
 [![Download for macOS](https://img.shields.io/badge/Download-macOS%20%C2%B7%20Apple%20Silicon-8b5cf6?style=for-the-badge&logo=apple&logoColor=white)](https://github.com/jutsuhq/swapjutsu-seedance-character-swap/releases/latest)
 

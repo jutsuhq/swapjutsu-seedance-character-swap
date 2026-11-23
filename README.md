@@ -11,6 +11,10 @@ Guide, examples and FAQ: [jutsustudio.com/swapjutsu](https://jutsustudio.com/swa
 
 [![Download for macOS](https://img.shields.io/badge/Download-macOS%20%C2%B7%20Apple%20Silicon-8b5cf6?style=for-the-badge&logo=apple&logoColor=white)](https://github.com/jutsuhq/swapjutsu-seedance-character-swap/releases/latest)
 
+[![GitHub stars](https://img.shields.io/github/stars/jutsuhq/swapjutsu-seedance-character-swap?style=social)](https://github.com/jutsuhq/swapjutsu-seedance-character-swap/stargazers)
+
+⭐ Swapjutsu is free with no watermark. A star is how other people find it; **Watch › Custom › Releases** emails you each new version.
+
 [Examples](#examples) · [Install](#install) · [Quick start](#quick-start) · [How it works](#how-it-works) ·
 [Rendering](#rendering) · [Agents](#agents) · [Docs](#documentation) · [Website](https://jutsustudio.com/swapjutsu/)
 
